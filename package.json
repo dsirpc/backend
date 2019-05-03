@@ -1,0 +1,32 @@
+{
+  "name": "rpc-backend",
+  "version": "0.0.0",
+  "description": "",
+  "private": true,
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "npm run serve",
+    "serve": "node dist/server.js",
+    "build": "npm run build-ts && npm run tslint",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-ts": "tsc",
+    "tslint": "tslint -c tslint.json -p tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dsirpc/backend.git"
+  },
+  "author": "RPC",
+  "license": "ISC",
+  "homepage": "https://github.com/dsirpc/backend#readme",
+  "dependencies": {
+    "dotenv": "5.0.1",
+    "express": "4.16.3",
+    "socket.io": "^2.1.0"
+  },
+  "devDependencies": {
+    "typescript": "2.7.2",
+    "@types/node": "6.0.60",
+    "@types/express": "4.11.1"
+  }
+}
