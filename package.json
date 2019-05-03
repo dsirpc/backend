@@ -10,6 +10,7 @@
     "build": "npm run build-ts && npm run tslint",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-ts": "tsc",
+    "postinstall": "npm run build-ts",
     "tslint": "tslint -c tslint.json -p tsconfig.json"
   },
   "repository": {
