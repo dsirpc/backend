@@ -57,3 +57,9 @@ export function getModel() : mongoose.Model< Order >  { // Return Model as singl
     }
     return orderModel;
 }
+
+export function newOrder( data ): Order {
+    var _ordermodel = getModel();
+    var order = new _ordermodel( data );
+    return order;
+}

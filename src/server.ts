@@ -1,17 +1,17 @@
 /*
-    ENDPOINT            PARAMS          METHOD
+    ENDPOINT               PARAMS          METHOD
 
-    /user                 -              POST
-    /user                ?id             GET
-    /user:id              -              DELETE
-    /login                -              POST
-    /ordini               -              POST
-    /ordini:piatto        -              PUT
-    /ordini:ordine        -              PUT
-    /ordini        ?id ?tavolo ?status   GET
-    /tavoli              ?id             GET
-    /tavoli:id            -              PUT
-    /tavoli:id            -              POST
+    /user                    -              POST
+    /user                   ?id             GET
+    /user:id                 -              DELETE
+    /login                   -              POST
+    /order                   -              POST
+    /order:dish_id           -              PUT
+    /order:order_id          -              PUT
+    /order            ?id ?table ?status    GET
+    /table              ?id ?status         GET
+    /table:table_id          -              PUT  ??status
+    /table                   -              POST
 */
 const result = require('dotenv').config();
 
@@ -102,28 +102,63 @@ app.post('/orders', auth, (req, res, next) => {
     });
 });
 
-app.put('/orders/:dish', auth, (req, res, next) => {
+app.put('/orders/:dish_id', auth, (req, res, next) => {
 
 });
 
-app.put('/orders/:id', auth, (req, res, next) => {
-
+app.put('/orders/:order_id', auth, (req, res, next) => {
+    order.getModel().updateOne({_id: req.params.order_id}, {$set: {"status": "true"}}).then((data) => {
+        return res.status(200).json({ error: false, errormessage: "", id: data._id });
+    }).catch((reason) => {
+        return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
+    });
 });
 
 app.get('/orders', auth, (req, res, next) => {
+    var filter = {};
+    if( req.query.tags ) {
+        filter = { tags: {$all: req.query.tags } };
+    }
 
+    order.getModel().find(filter).sort({timestamp: "asc"}).then((orders) => {
+        return res.status(200).json(orders);
+    }).catch( (reason) => {
+        return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
+    });
 });
 
-app.put('/tables/:id', auth, (req, res, next) => {
-
+app.put('/tables/:table_id', auth, (req, res, next) => {
+    table.getModel().updateOne({_id: req.params.table_id}, {$set: {"status": req.params.status}}).then((data) => {
+        return res.status(200).json({ error: false, errormessage: "", id: data._id });
+    }).catch((reason) => {
+        return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
+    });
 });
 
 app.get('/tables', auth, (req, res, next) => {
+    var filter = {};
+    if( req.query.tags ) {
+        filter = { tags: {$all: req.query.tags } };
+    }
 
+    table.getModel().find(filter).then((tables) => {
+        return res.status(200).json(tables);
+    }).catch((reason) => {
+        return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
+    });
 });
 
-app.post('/tables/:id', auth, (req, res, next) => {
+app.post('/tables', auth, (req, res, next) => {
+    var _table = req.body;
+    _table.seats = req.body.seats;
+    _table.status = false;
 
+    table.getModel().create(_table).then((data) => {
+        ios.emit('broadcast', data );
+        return res.status(200).json({ error: false, errormessage: "", id: data._id });
+    }).catch((reason) => {
+        return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
+    });
 });
 
 app.listen(port, () => console.log(`HTTP app listening on port ${port}!`));
