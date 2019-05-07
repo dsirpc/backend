@@ -3,7 +3,8 @@ import mongoose = require('mongoose');
 export interface Table extends mongoose.Document{
     readonly _id: mongoose.Schema.Types.ObjectId,
     seats: number,
-    status: boolean
+    status: boolean,
+    setStatus: ()=>void
 }
 
 var tableSchema = new mongoose.Schema({
@@ -16,6 +17,10 @@ var tableSchema = new mongoose.Schema({
         required: true
     }
 })
+
+tableSchema.methods.setStatus = function(){
+    this.status = !this.status;
+}
 
 export function getSchema() { return tableSchema; }
 

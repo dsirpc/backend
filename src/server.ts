@@ -27,7 +27,6 @@ if (!process.env.JWT_SECRET) {
 
 import express = require('express');
 import mongoose = require('mongoose');
-
 import jsonwebtoken = require('jsonwebtoken');  // JWT generation
 import jwt = require('express-jwt');            // JWT parsing middleware for express
 
@@ -92,8 +91,8 @@ app.delete('user/:id', auth, (req, res, next) => {
 app.post('/orders', auth, (req, res, next) => {
     var recvorder = req.body;
     recvorder.timestamp = new Date();
-    recvorder.table_number = req.table.id;
-    recvorder.dishes = req.dishes;
+    recvorder.table_number = req.body.table.id;
+    recvorder.dishes = req.body.dishes;
     recvorder.waiter = req.user.id;
     recvorder.status = false;
 
@@ -131,11 +130,8 @@ app.get('/orders', auth, (req, res, next) => {
 });
 
 app.put('/tables/:table_id', auth, (req, res, next) => {
-    table.getModel().updateOne({ _id: req.params.table_id }, { $set: { "status": req.params.status } }).then((data) => {
-        return res.status(200).json({ error: false, errormessage: "", id: data._id });
-    }).catch((reason) => {
-        return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
-    });
+    var table = table.getModel().findOne({_id: req.params._id});
+    table.setStatus();
 });
 
 app.get('/tables', auth, (req, res, next) => {
