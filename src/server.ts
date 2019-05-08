@@ -34,6 +34,7 @@ import https = require('https');
 import io = require('socket.io');
 import passport = require('passport');           // authentication middleware for express
 import passportHTTP = require('passport-http');
+import bodyparser = require('body-parser');
 
 import { userInfo } from 'os';
 import { User } from './User';
@@ -49,11 +50,13 @@ var ios = undefined;
 var app = express();
 var auth = jwt({ secret: process.env.JWT_SECRET });
 
+app.use( bodyparser.json() );
+
 const port = process.env.PORT || 8080;
 
 app.get('/', (req, res) => res.send('Test'));
 
-app.post('/user', (req, res, next) => {
+app.post('/user', auth, (req, res, next) => {
     var u = user.newUser(req.body);
     if (!req.body.password) {
         return next({ statusCode: 404, error: true, errormessage: "Password field missing" });
@@ -75,18 +78,19 @@ app.get('/user', auth, (req, res, next) => {
         filter = { id: { $all: req.query.id } };
 
     user.getModel().find(filter).then((users) => {
-        return res.status(200).json({ error: false, errormessage: "" });
+        return res.status(200).json({ error: false, errormessage: "", data: users });
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     })
 });
 
-app.delete('user/:id', auth, (req, res, next) => {
+app.delete('/user/:id', auth, (req, res, next) => {
+    console.log("ok");
     if (!user.newUser(req.user).hasAdminRole()) {
         return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not a moderator" });
     }
-
-    user.getModel().deleteOne({ id: req.params.id }).then(() => {
+    
+    user.getModel().deleteOne({_id: req.params.id}).then(() => {
         return res.status(200).json({ error: false, errormessage: "" });
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
@@ -225,7 +229,7 @@ mongoose.connect(process.env.MONGODB_URI).then(
     function onconnected() {
         console.log("Connected to MongoDB");
 
-        var u = user.newUser({
+        /*var u = user.newUser({
             username: "admin",
         });
         u.setAdmin();
@@ -234,7 +238,7 @@ mongoose.connect(process.env.MONGODB_URI).then(
             console.log("Admin user created");
         }).catch((err) => {
             console.log("Unable to create admin user: " + err);
-        });
+        });*/
 
 
         // To start a standard HTTP server we directly invoke the "listen"
