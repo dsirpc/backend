@@ -21,6 +21,7 @@
   "license": "ISC",
   "homepage": "https://github.com/dsirpc/backend#readme",
   "dependencies": {
+    "@types/socket.io": "^2.1.2",
     "dotenv": "5.0.1",
     "express": "4.16.3",
     "express-jwt": "^5.3.1",
@@ -32,13 +33,13 @@
     "socket.io": "^2.2.0"
   },
   "devDependencies": {
-    "typescript": "2.7.2",
-    "@types/node": "6.0.60",
     "@types/express": "4.11.1",
-    "@types/passport": "0.4.3",
-    "@types/jsonwebtoken": "7.2.6",
     "@types/express-jwt": "0.0.38",
+    "@types/jsonwebtoken": "^7.2.6",
     "@types/mongodb": "^3.1.26",
-    "@types/mongoose": "^5.3.27"
+    "@types/mongoose": "^5.3.27",
+    "@types/node": "6.0.60",
+    "@types/passport": "0.4.3",
+    "typescript": "2.7.2"
   }
 }

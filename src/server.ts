@@ -29,6 +29,11 @@ import express = require('express');
 import mongoose = require('mongoose');
 import jsonwebtoken = require('jsonwebtoken');  // JWT generation
 import jwt = require('express-jwt');            // JWT parsing middleware for express
+import http = require('http');                // HTTP module
+import https = require('https'); 
+import io = require('socket.io');
+import passport = require('passport');           // authentication middleware for express
+import passportHTTP = require('passport-http');
 
 import { userInfo } from 'os';
 import { User } from './User';
@@ -104,19 +109,25 @@ app.post('/orders', auth, (req, res, next) => {
     });
 });
 
-app.put('/orders/:dish_id', auth, (req, res, next) => {
-
-});
-
-app.put('/orders/:order_id', auth, (req, res, next) => {
-    order.getModel().updateOne({ _id: req.params.order_id }, { $set: { "status": "true" } }).then((data) => {
-        return res.status(200).json({ error: false, errormessage: "", id: data._id });
+app.put('/orders/:order_id/:dish_id', auth, (req, res, next) => {
+    order.getModel().findOne({_id: req.params.order_id}).then((order) => {
+        order.setDishReady(req.params.dish_id);
+        return res.status(200).json({ error: false, errormessage: "", id: order._id });
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
 
-app.get('/orders', auth, (req, res, next) => {
+app.put('/orders/:order_id', auth, (req, res, next) => {
+    order.getModel().findOne({_id: req.params.order_id}).then((order) => {
+        order.setOrderReady();
+        return res.status(200).json({ error: false, errormessage: "", id: order._id });
+    }).catch((reason) => {
+        return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
+    });
+});
+
+app.get('/orders', (req, res, next) => {
     var filter = {};
     if (req.query.tags) {
         filter = { tags: { $all: req.query.tags } };
@@ -134,7 +145,7 @@ app.put('/tables/:table_id', auth, (req, res, next) => {
     table.setStatus();
 });
 
-app.get('/tables', auth, (req, res, next) => {
+app.get('/tables', (req, res, next) => {
     var filter = {};
     if (req.query.tags) {
         filter = { tags: { $all: req.query.tags } };
@@ -160,4 +171,95 @@ app.post('/tables', auth, (req, res, next) => {
     });
 });
 
-app.listen(port, () => console.log(`HTTP app listening on port ${port}!`));
+passport.use( new passportHTTP.BasicStrategy(
+    function(username, password, done) {
+  
+      // Delegate function we provide to passport middleware
+      // to verify user credentials 
+  
+    console.log("New login attempt from "+ username );
+    user.getModel().findOne( {mail: username} , (err, user)=>{
+        if( err ) {
+            return done({statusCode: 500, error: true, errormessage:err});
+        }
+        if( !user ) {
+            return done({statusCode: 500, error: true, errormessage:"Invalid user"});
+        }
+        if( user.validatePassword( password ) ) {
+            return done(null, user);
+        }
+        return done({statusCode: 500, error: true, errormessage:"Invalid password"});
+      })
+    }
+));
+  
+  
+  // Login endpoint uses passport middleware to check
+  // user credentials before generating a new JWT
+app.get("/login", passport.authenticate('basic', { session: false }), (req,res,next) => {
+
+    // If we reach this point, the user is successfully authenticated and
+    // has been injected into req.user
+
+    // We now generate a JWT with the useful user data
+    // and return it as response
+
+    var tokendata = {
+        username: req.user.username,
+        roles: req.user.roles,
+        mail: req.user.mail,
+        id: req.user.id
+    };
+
+    console.log("Login granted. Generating token" );
+    var token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: '1h' } );
+
+// Note: You can manually check the JWT content at https://jwt.io
+
+    return res.status(200).json({ error: false, errormessage: "", token: token_signed });
+
+});
+
+//app.listen(port, () => console.log(`HTTP app listening on port ${port}!`));
+mongoose.connect(process.env.MONGODB_URI).then( 
+    function onconnected() {
+        console.log("Connected to MongoDB");
+
+        var u = user.newUser( {
+            username: "admin",
+        } );
+        u.setAdmin();
+        u.setPassword("admin");
+        u.save().then( ()=> {
+            console.log("Admin user created");
+        }).catch( (err)=> {
+            console.log("Unable to create admin user: " + err );
+        });
+
+
+        // To start a standard HTTP server we directly invoke the "listen"
+        // method of express application
+        let server = http.createServer(app);
+        ios = io(server);
+        ios.on('connection', function(client) {
+          console.log( "Socket.io client connected");
+        });
+        server.listen( 8080, () => console.log("HTTP Server started on port 8080") );
+
+        // To start an HTTPS server we create an https.Server instance 
+        // passing the express application middleware. Then, we start listening
+        // on port 8443
+        //
+        /*
+        https.createServer({
+          key: fs.readFileSync('keys/key.pem'),
+          cert: fs.readFileSync('keys/cert.pem')
+        }, app).listen(8443);
+        */
+
+    },
+    function onrejected() {
+        console.log("Unable to connect to MongoDB");
+        process.exit(-2);
+    }
+)
