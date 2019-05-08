@@ -43,5 +43,5 @@
     "@types/jsonwebtoken": "7.2.6",
     "@types/express-jwt": "0.0.38",
     "concurrently": "3.5.1"
-  },
+  }
 }
