@@ -30,7 +30,7 @@ import mongoose = require('mongoose');
 import jsonwebtoken = require('jsonwebtoken');  // JWT generation
 import jwt = require('express-jwt');            // JWT parsing middleware for express
 import http = require('http');                // HTTP module
-import https = require('https'); 
+import https = require('https');
 import io = require('socket.io');
 import passport = require('passport');           // authentication middleware for express
 import passportHTTP = require('passport-http');
@@ -110,7 +110,7 @@ app.post('/orders', auth, (req, res, next) => {
 });
 
 app.put('/orders/:order_id/:dish_id', auth, (req, res, next) => {
-    order.getModel().findOne({_id: req.params.order_id}).then((order) => {
+    order.getModel().findOne({ _id: req.params.order_id }).then((order) => {
         order.setDishReady(req.params.dish_id);
         return res.status(200).json({ error: false, errormessage: "", id: order._id });
     }).catch((reason) => {
@@ -119,7 +119,7 @@ app.put('/orders/:order_id/:dish_id', auth, (req, res, next) => {
 });
 
 app.put('/orders/:order_id', auth, (req, res, next) => {
-    order.getModel().findOne({_id: req.params.order_id}).then((order) => {
+    order.getModel().findOne({ _id: req.params.order_id }).then((order) => {
         order.setOrderReady();
         return res.status(200).json({ error: false, errormessage: "", id: order._id });
     }).catch((reason) => {
@@ -141,7 +141,7 @@ app.get('/orders', (req, res, next) => {
 });
 
 app.put('/tables/:table_id', auth, (req, res, next) => {
-    var table = table.getModel().findOne({_id: req.params._id});
+    var table = table.getModel().findOne({ _id: req.params._id });
     table.setStatus();
 });
 
@@ -171,32 +171,32 @@ app.post('/tables', auth, (req, res, next) => {
     });
 });
 
-passport.use( new passportHTTP.BasicStrategy(
-    function(username, password, done) {
-  
-      // Delegate function we provide to passport middleware
-      // to verify user credentials 
-  
-    console.log("New login attempt from "+ username );
-    user.getModel().findOne( {mail: username} , (err, user)=>{
-        if( err ) {
-            return done({statusCode: 500, error: true, errormessage:err});
-        }
-        if( !user ) {
-            return done({statusCode: 500, error: true, errormessage:"Invalid user"});
-        }
-        if( user.validatePassword( password ) ) {
-            return done(null, user);
-        }
-        return done({statusCode: 500, error: true, errormessage:"Invalid password"});
-      })
+passport.use(new passportHTTP.BasicStrategy(
+    function (username, password, done) {
+
+        // Delegate function we provide to passport middleware
+        // to verify user credentials 
+
+        console.log("New login attempt from " + username);
+        user.getModel().findOne({ mail: username }, (err, user) => {
+            if (err) {
+                return done({ statusCode: 500, error: true, errormessage: err });
+            }
+            if (!user) {
+                return done({ statusCode: 500, error: true, errormessage: "Invalid user" });
+            }
+            if (user.validatePassword(password)) {
+                return done(null, user);
+            }
+            return done({ statusCode: 500, error: true, errormessage: "Invalid password" });
+        })
     }
 ));
-  
-  
-  // Login endpoint uses passport middleware to check
-  // user credentials before generating a new JWT
-app.get("/login", passport.authenticate('basic', { session: false }), (req,res,next) => {
+
+
+// Login endpoint uses passport middleware to check
+// user credentials before generating a new JWT
+app.get("/login", passport.authenticate('basic', { session: false }), (req, res, next) => {
 
     // If we reach this point, the user is successfully authenticated and
     // has been injected into req.user
@@ -211,29 +211,29 @@ app.get("/login", passport.authenticate('basic', { session: false }), (req,res,n
         id: req.user.id
     };
 
-    console.log("Login granted. Generating token" );
-    var token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: '1h' } );
+    console.log("Login granted. Generating token");
+    var token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-// Note: You can manually check the JWT content at https://jwt.io
+    // Note: You can manually check the JWT content at https://jwt.io
 
     return res.status(200).json({ error: false, errormessage: "", token: token_signed });
 
 });
 
 //app.listen(port, () => console.log(`HTTP app listening on port ${port}!`));
-mongoose.connect(process.env.MONGODB_URI).then( 
+mongoose.connect(process.env.MONGODB_URI).then(
     function onconnected() {
         console.log("Connected to MongoDB");
 
-        var u = user.newUser( {
+        var u = user.newUser({
             username: "admin",
-        } );
+        });
         u.setAdmin();
         u.setPassword("admin");
-        u.save().then( ()=> {
+        u.save().then(() => {
             console.log("Admin user created");
-        }).catch( (err)=> {
-            console.log("Unable to create admin user: " + err );
+        }).catch((err) => {
+            console.log("Unable to create admin user: " + err);
         });
 
 
@@ -241,10 +241,10 @@ mongoose.connect(process.env.MONGODB_URI).then(
         // method of express application
         let server = http.createServer(app);
         ios = io(server);
-        ios.on('connection', function(client) {
-          console.log( "Socket.io client connected");
+        ios.on('connection', function (client) {
+            console.log("Socket.io client connected");
         });
-        server.listen( 8080, () => console.log("HTTP Server started on port 8080") );
+        server.listen(8080, () => console.log("HTTP Server started on port 8080"));
 
         // To start an HTTPS server we create an https.Server instance 
         // passing the express application middleware. Then, we start listening
