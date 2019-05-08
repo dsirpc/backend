@@ -178,7 +178,8 @@ passport.use(new passportHTTP.BasicStrategy(
         // to verify user credentials 
 
         console.log("New login attempt from " + username);
-        user.getModel().findOne({ mail: username }, (err, user) => {
+        user.getModel().findOne({ username: username }, (err, user) => {
+            
             if (err) {
                 return done({ statusCode: 500, error: true, errormessage: err });
             }
@@ -207,7 +208,6 @@ app.get("/login", passport.authenticate('basic', { session: false }), (req, res,
     var tokendata = {
         username: req.user.username,
         roles: req.user.roles,
-        mail: req.user.mail,
         id: req.user.id
     };
 
