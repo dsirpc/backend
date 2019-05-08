@@ -4,6 +4,8 @@
   "version": "0.0.1",
   "author": "dsirpc",
   "dependencies": {
+    "@types/passport-http": "^0.3.8",
+    "@types/socket.io": "^2.1.2",
     "body-parser": "1.18.2",
     "colors": "1.2.1",
     "cors": "^2.8.4",
