@@ -5,19 +5,13 @@ export interface User extends mongoose.Document {
     readonly _id: mongoose.Schema.Types.ObjectId,
     username: string,
     //mail: string,
-    roles: string[],
+    role: string,
     salt: string,
     digest: string,
     setPassword: (pwd:string)=>void,
     validatePassword: (pwd:string)=>boolean,
-    hasAdminRole: ()=>boolean,
-    setAdmin: ()=>void,
-    hasChefRole: ()=>boolean,
-    setChef: ()=>void,
-    hasWaiterRole: ()=>boolean,
-    setWaiter: ()=>void,
-    hasBarmanRole: ()=>boolean,
-    setBarman: ()=>void,
+    checkRole: (role:string)=>boolean,
+    setRole: (role:string)=>void
 }
 
 var userSchema = new mongoose.Schema( {
@@ -31,7 +25,7 @@ var userSchema = new mongoose.Schema( {
         unique: true
     },*/
     roles:  {
-        type: [mongoose.SchemaTypes.String],
+        type: mongoose.SchemaTypes.String,
         required: true 
     },
     salt:  {
@@ -74,16 +68,12 @@ userSchema.methods.validatePassword = function( pwd:string ):boolean {
     return (this.digest === digest);
 }
 
-userSchema.methods.hasAdminRole = function(): boolean {
+/*userSchema.methods.hasAdminRole = function(): boolean {
     for( var roleidx in this.roles ) {
         if( this.roles[roleidx] === 'ADMIN' )
             return true;
     }
     return false;
-}
-
-userSchema.methods.setAdmin = function() {
-    this.roles.push( "ADMIN" );
 }
 
 userSchema.methods.hasChefRole = function(): boolean {
@@ -94,20 +84,12 @@ userSchema.methods.hasChefRole = function(): boolean {
     return false;
 }
 
-userSchema.methods.setChef = function() {
-    this.roles.push( "CHEF" );
-}
-
 userSchema.methods.hasWaiterRole = function(): boolean {
     for( var roleidx in this.roles ) {
         if( this.roles[roleidx] === 'WAITER' )
             return true;
     }
     return false;
-}
-
-userSchema.methods.setWaiter = function() {
-    this.roles.push( "WAITER" );
 }
 
 userSchema.methods.hasBarmanRole = function(): boolean {
@@ -118,13 +100,22 @@ userSchema.methods.hasBarmanRole = function(): boolean {
     return false;
 }
 
-userSchema.methods.setBarman = function() {
-    this.roles.push( "BARMAN" );
+userSchema.methods.hasCaherRole = function(): boolean {
+    for( var roleidx in this.roles ) {
+        if( this.roles[roleidx] === 'CASHER' )
+            return true;
+    }
+    return false;
+}*/
+
+userSchema.methods.checkRole = function(role:string): boolean{
+    return this.role==role;
 }
 
-
-
-
+userSchema.methods.setRole = function(role:string): void{
+    role = role.toUpperCase();
+    this.role = role;
+}
 
 export function getSchema() { return userSchema; }
 

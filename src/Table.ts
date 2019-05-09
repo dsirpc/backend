@@ -18,7 +18,7 @@ var tableSchema = new mongoose.Schema({
     }
 })
 
-tableSchema.methods.setStatus = function(){
+tableSchema.methods.setStatus = function(): void{
     this.status = !this.status;
 }
 

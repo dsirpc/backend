@@ -50,7 +50,7 @@ var orderSchema = new mongoose.Schema({
     }
 });
 
-orderSchema.methods.setDishReady = function(dish:string){
+orderSchema.methods.setDishReady = function(dish:string): void{
     for(var d in this.dishes){
         if(d==dish){
             var position = this.dishes.indexOf(d);
@@ -60,7 +60,7 @@ orderSchema.methods.setDishReady = function(dish:string){
     }
 }
 
-orderSchema.methods.setOrderReady = function(){
+orderSchema.methods.setOrderReady = function(): void{
     this.status = true;
     for(var i = 0; i < this.dishes_status; i++)
         this.dishes_status = true;
