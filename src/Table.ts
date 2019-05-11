@@ -1,13 +1,17 @@
 import mongoose = require('mongoose');
 
 export interface Table extends mongoose.Document{
-    readonly _id: mongoose.Schema.Types.ObjectId,
+    number_id: number,
     seats: number,
     status: boolean,
     setStatus: ()=>void
 }
 
 var tableSchema = new mongoose.Schema({
+    number_id: {
+        type: mongoose.SchemaTypes.Number,
+        required: true
+    },
     seats: {
         type: mongoose.SchemaTypes.Number,
         required: true

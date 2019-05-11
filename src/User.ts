@@ -2,9 +2,7 @@ import mongoose = require('mongoose');
 import crypto = require('crypto');
 
 export interface User extends mongoose.Document {
-    readonly _id: mongoose.Schema.Types.ObjectId,
     username: string,
-    //mail: string,
     role: string,
     salt: string,
     digest: string,
@@ -19,12 +17,7 @@ var userSchema = new mongoose.Schema( {
         type: mongoose.SchemaTypes.String,
         required: true
     },
-    /*mail: {
-        type: mongoose.SchemaTypes.String,
-        required: true,
-        unique: true
-    },*/
-    roles:  {
+    role:  {
         type: mongoose.SchemaTypes.String,
         required: true 
     },
@@ -68,48 +61,8 @@ userSchema.methods.validatePassword = function( pwd:string ):boolean {
     return (this.digest === digest);
 }
 
-/*userSchema.methods.hasAdminRole = function(): boolean {
-    for( var roleidx in this.roles ) {
-        if( this.roles[roleidx] === 'ADMIN' )
-            return true;
-    }
-    return false;
-}
-
-userSchema.methods.hasChefRole = function(): boolean {
-    for( var roleidx in this.roles ) {
-        if( this.roles[roleidx] === 'CHEF' )
-            return true;
-    }
-    return false;
-}
-
-userSchema.methods.hasWaiterRole = function(): boolean {
-    for( var roleidx in this.roles ) {
-        if( this.roles[roleidx] === 'WAITER' )
-            return true;
-    }
-    return false;
-}
-
-userSchema.methods.hasBarmanRole = function(): boolean {
-    for( var roleidx in this.roles ) {
-        if( this.roles[roleidx] === 'BARMAN' )
-            return true;
-    }
-    return false;
-}
-
-userSchema.methods.hasCaherRole = function(): boolean {
-    for( var roleidx in this.roles ) {
-        if( this.roles[roleidx] === 'CASHER' )
-            return true;
-    }
-    return false;
-}*/
-
 userSchema.methods.checkRole = function(role:string): boolean{
-    return this.role==role;
+    return this.role == role;
 }
 
 userSchema.methods.setRole = function(role:string): void{

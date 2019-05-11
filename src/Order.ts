@@ -6,9 +6,9 @@ export interface Order extends mongoose.Document{
     dishes: string[],
     drinks: string[],
     dishes_status: boolean[],
-    chef: mongoose.Schema.Types.ObjectId,
-    waiter: mongoose.Schema.Types.ObjectId,
-    barman: mongoose.Schema.Types.ObjectId,
+    chef: string,
+    waiter: string,
+    barman: string,
     status: boolean,
     timestamp: Date,
     setDishReady: (dish:string)=>void,
@@ -21,23 +21,23 @@ var orderSchema = new mongoose.Schema({
         required: true
     },
     dishes: {
-        type: [mongoose.Schema.Types.ObjectId],
+        type: [mongoose.SchemaTypes.String],
         required: true
     },
     drinks: {
-        type: [mongoose.Schema.Types.ObjectId],
+        type: [mongoose.SchemaTypes.String],
         required: false
     },
     chef: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.SchemaTypes.String,
         required: false
     },
     waiter: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.SchemaTypes.String,
         required: false
     },
     barman: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.SchemaTypes.String,
         required: true
     },
     status: {
