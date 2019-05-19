@@ -6,15 +6,13 @@
     /user:username                    -                 DELETE
     /login                            -                 POST
     /order                            -                 POST
-    /order:order_id/:dish_id          -                 PUT
-    /order:order_id                   -                 PUT
+    /order                            -                 PUT
     /order                     ?id ?table ?status       GET
     /table                       ?id ?status            GET
-    /table:table_id                   -                 PUT
+    /table                            -                 PUT
     /table                            -                 POST
     /dish                             -                 POST
     /dish                           ?name               GET
-    /dish:name/:price                 -                 PUT
     /dish:name                        -                 DELETE  
 */
 const result = require('dotenv').config();
@@ -136,7 +134,7 @@ app.post('/order', auth, (req, res, next) => {
     });
 });
 
-app.put('/order/:order_id/:dish_id', auth, (req, res, next) => {
+/*app.put('/order/:order_id/:dish_id', auth, (req, res, next) => {
     user.getModel().findOne({username: req.user.username}).then((u) => {
         if (!u.checkRole("CHEF")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an chef" });
@@ -149,17 +147,17 @@ app.put('/order/:order_id/:dish_id', auth, (req, res, next) => {
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
-});
+});*/
 
-app.put('/order/:order_id', auth, (req, res, next) => {
+app.put('/order', auth, (req, res, next) => {
     user.getModel().findOne({username: req.user.username}).then((u) => {
         if (!u.checkRole("CHEF")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an chef" });
         }
     });
 
-    order.getModel().findOne({ _id: req.params.order_id }).then((order) => {
-        order.setOrderReady();
+    order.getModel().findOne(req.body).then((order) => {
+        order.setOrderStatus();
         return res.status(200).json({ error: false, errormessage: "", id: order._id });
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
@@ -179,14 +177,14 @@ app.get('/order', (req, res, next) => {
     });
 });
 
-app.put('/table/:table_id', auth, (req, res, next) => {
+app.put('/table', auth, (req, res, next) => {
     user.getModel().findOne({username: req.user.username}).then((u) => {
-        if (!u.checkRole("CASHER")) {
+        if (!u.checkRole("CASHER") || !u.checkRole("WAITER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an casher" });
         }
     });
 
-    var t = table.getModel().findOne({ number_id: req.params.number_id });
+    var t = table.getModel().findOne(req.body);
     table.newTable(t).setStatus();
 });
 
@@ -264,17 +262,6 @@ app.post('/dish', auth, (req, res, next) => {
             });
         }
     })
-});
-
-app.put('/dish/:name/:price', auth, (req, res, next) => {
-    user.getModel().findOne({username: req.user.username}).then((u) => {
-        if (!u.checkRole("ADMIN")) {
-            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
-        }
-    });
-
-    var d = dish.getModel().findOne({name: req.params.name});
-    dish.newDish(d).setPrice(req.params.price);
 });
 
 app.delete('/dish/:name', auth, (req, res, next) => {
