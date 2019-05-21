@@ -4,7 +4,8 @@ export interface Table extends mongoose.Document{
     number_id: number,
     seats: number,
     status: boolean,
-    setStatus: ()=>void
+    setStatus: ()=>void,
+    getStatus: ()=>boolean
 }
 
 var tableSchema = new mongoose.Schema({
@@ -24,6 +25,10 @@ var tableSchema = new mongoose.Schema({
 
 tableSchema.methods.setStatus = function(): void{
     this.status = !this.status;
+}
+
+tableSchema.methods.getStatus = function(): boolean{
+    return this.status;
 }
 
 export function getSchema() { return tableSchema; }

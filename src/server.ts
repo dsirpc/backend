@@ -49,6 +49,10 @@ import { Order } from './Order';
 import * as order from './Order';
 
 var ios = undefined;
+const nsp_chefs = ios.of('/chefs');
+const nsp_waiters = ios.of('/waiters');
+const nsp_cashers = ios.of('/cashers');
+
 var app = express();
 var auth = jwt({ secret: process.env.JWT_SECRET });
 
@@ -127,7 +131,8 @@ app.post('/order', auth, (req, res, next) => {
     neworder.status = false;
 
     order.getModel().create(neworder).then((data) => {
-        ios.emit('broadcast', data);
+        nsp_chefs.emit('orderSent', data);
+        nsp_cashers.emit('orderSent', data);
         return res.status(200).json({ error: false, errormessage: "", id: data._id });
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
@@ -157,6 +162,8 @@ app.put('/order', auth, (req, res, next) => {
     });
 
     order.getModel().findOne(req.body).then((order) => {
+        nsp_cashers.emit('orderCompleted', order);
+        nsp_waiters.emit('orderCompleted', order);
         order.setOrderStatus();
         return res.status(200).json({ error: false, errormessage: "", id: order._id });
     }).catch((reason) => {
@@ -184,8 +191,14 @@ app.put('/table', auth, (req, res, next) => {
         }
     });
 
-    var t = table.getModel().findOne(req.body);
-    table.newTable(t).setStatus();
+    table.getModel().findOne(req.body).then((t) => {
+        table.newTable(t).setStatus();
+        if(table.newTable(t).getStatus())
+            nsp_waiters.emit('tableFree', order);
+        else
+            nsp_cashers.emit('tableOccupied', order);
+    });
+    
 });
 
 app.get('/table', (req, res, next) => {
@@ -216,7 +229,7 @@ app.post('/table', auth, (req, res, next) => {
             newtable.status = false;
 
             table.getModel().create(newtable).then((data) => {
-                ios.emit('broadcast', data);
+                nsp_waiters.emit('tableCreated', data);
                 return res.status(200).json({ error: false, errormessage: "", id: data.number_id });
             }).catch((reason) => {
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
@@ -255,7 +268,6 @@ app.post('/dish', auth, (req, res, next) => {
             newdish.ingredients = req.query.ingredients;
         
             dish.getModel().create(newdish).then((data) => {
-                ios.emit('broadcast', data);
                 return res.status(200).json({ error: false, errormessage: "", id: data.name });
             }).catch((reason) => {
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
@@ -276,6 +288,15 @@ app.delete('/dish/:name', auth, (req, res, next) => {
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
+});
+
+app.get('/renew', auth, (req,res,next) => {
+    var tokendata = req.user;
+    delete tokendata.iat;
+    delete tokendata.exp;
+    console.log("Renewing token for user " + JSON.stringify( tokendata ));
+    var token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: '1h' } );
+    return res.status(200).json({ error: false, errormessage: "", token: token_signed });
 });
 
 passport.use(new passportHTTP.BasicStrategy(
