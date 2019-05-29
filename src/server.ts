@@ -100,6 +100,12 @@ app.post('/user', auth, (req, res, next) => {
 });
 
 app.get('/user', (req, res, next) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
+        if (!u.checkRole("CASHER")) {
+            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
+        }
+    });
+
     var filter = {};
     if (req.query.username)
         filter['username'] = { $all: req.query.username };
