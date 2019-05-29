@@ -17,14 +17,15 @@
 */
 const result = require('dotenv').config();
 
-// if (result.error) {
-//     console.log("Unable to load \".env\" file. Please provide one to store the JWT secret key");
-//     process.exit(-1);
-// }
-// if (!process.env.JWT_SECRET) {
-//     console.log("\".env\" file loaded but JWT_SECRET=<secret> key-value pair was not found");
-//     process.exit(-1);
-// }
+
+if (result.error) {
+    console.log("Unable to load \".env\" file. Please provide one to store the JWT secret key");
+    process.exit(-1);
+}
+if (!process.env.JWT_SECRET) {
+    console.log("\".env\" file loaded but JWT_SECRET=<secret> key-value pair was not found");
+    process.exit(-1);
+}
 
 
 import express = require('express');
