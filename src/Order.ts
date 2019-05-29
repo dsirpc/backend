@@ -2,15 +2,18 @@ import mongoose = require('mongoose');
 
 export interface Order extends mongoose.Document{
     readonly _id: mongoose.Schema.Types.ObjectId,
-    table_number: string,
+    table_number: number,
     dishes: string[],
     drinks: string[],
+    dishes_ready: boolean[],
     chef: string,
     waiter: string,
     barman: string,
     status: number,
     timestamp: Date,
-    setOrderStatus: ()=>void
+    setDishReady: (dish_id: string)=>void,
+    setOrderStatus: ()=>void,
+    getStatus: ()=>number
 }
 
 var orderSchema = new mongoose.Schema({
@@ -36,7 +39,7 @@ var orderSchema = new mongoose.Schema({
     },
     barman: {
         type: mongoose.SchemaTypes.String,
-        required: true
+        required: false
     },
     status: {
         type: mongoose.SchemaTypes.Number,
@@ -55,13 +58,22 @@ orderSchema.methods.setOrderStatus = function(): void{
     this.status = 2;
 }
 
+orderSchema.methods.setDishReady = function(dish:string): void{
+    this.dishes_ready[this.dishes.indexOf(dish)] = true;
+}
+
+orderSchema.methods.getStatus = function(): number{
+    return this.status;
+}
+
+
 export function getSchema() { return orderSchema; }
 
 var orderModel;
 
 export function getModel() : mongoose.Model< Order >  { // Return Model as singleton
     if( !orderModel ) {
-        orderModel = mongoose.model('User', getSchema() )
+        orderModel = mongoose.model('Order', getSchema() )
     }
     return orderModel;
 }
