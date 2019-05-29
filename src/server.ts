@@ -18,14 +18,16 @@
 const result = require('dotenv').config();
 
 
-if (result.error) {
-    console.log("Unable to load \".env\" file. Please provide one to store the JWT secret key");
-    process.exit(-1);
-}
-if (!process.env.JWT_SECRET) {
-    console.log("\".env\" file loaded but JWT_SECRET=<secret> key-value pair was not found");
-    process.exit(-1);
-}
+/* This check doesn't work with Heroku :( */
+
+// if (result.error) {
+//     console.log("Unable to load \".env\" file. Please provide one to store the JWT secret key");
+//     process.exit(-1);
+// }
+// if (!process.env.JWT_SECRET) {
+//     console.log("\".env\" file loaded but JWT_SECRET=<secret> key-value pair was not found");
+//     process.exit(-1);
+// }
 
 
 import express = require('express');
@@ -63,8 +65,12 @@ app.use(cors());
 
 const port = process.env.PORT || 8080;
 
-// DA CAMBIARE @PIETRO
-app.get('/', (req, res) => res.send('Test'));
+app.get("/", (req, res) => {
+
+    res.status(200).json({ api_version: "1.0", endpoints: ["/user", "/order", "/table", "/dish"] });
+    // json method sends a JSON response (setting the correct Content-Type) to the client
+
+});
 
 app.post('/user', auth, (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
