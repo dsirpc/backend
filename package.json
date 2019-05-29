@@ -33,7 +33,7 @@
   "scripts": {
     "compile": "tsc",
     "start": "node dist/server",
-    "postinstall": "npm run compile"
+    "postinstall": "npm run compile && exit 0"
   },
   "private": true
 }
