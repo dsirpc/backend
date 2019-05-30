@@ -99,19 +99,19 @@ app.post('/user', auth, (req, res, next) => {
     });
 });
 
-app.get('/user', (req, res, next) => {
-    /*user.getModel().findOne({ username: req.user.username }).then((u) => {
+app.get('/user', auth, (req, res, next) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
         }
-    });*/
+    });
 
     var filter = {};
     if (req.query.username)
         filter['username'] = { $all: req.query.username };
     if (req.query.role)
         filter['role'] = { $all: req.query.role };
-
+    
     user.getModel().find(filter).then((users) => {
         return res.status(200).json({ error: false, errormessage: "", data: users });
     }).catch((reason) => {
@@ -142,8 +142,6 @@ app.post('/order', auth, (req, res, next) => {
 
     var neworder = req.body;
     neworder.timestamp = new Date();
-    /*neworder.table_number = req.body.table;
-    neworder.dishes = req.body.dishes;*/
     neworder.waiter = req.user.username;
     neworder.status = 0;
 
@@ -185,12 +183,12 @@ app.put('/order', auth, (req, res, next) => {
     });
 });
 
-app.get('/order', (req, res, next) => {
-    /*user.getModel().findOne({ username: req.user.username }).then((u) => {
+app.get('/order', auth, (req, res, next) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CHEF") && !u.checkRole("CASHER") && !u.checkRole("BARMAN") && !u.checkRole("WAITER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin, chef, barman or waiter" });
         }
-    });*/
+    });
 
     var filter = {};
     if (req.query.table_number) {
@@ -207,7 +205,7 @@ app.get('/order', (req, res, next) => {
     });
 });
 
-app.delete('/order/:order_id', (req, res, next) => {
+app.delete('/order/:order_id', auth, (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
@@ -242,12 +240,12 @@ app.put('/table', auth, (req, res, next) => {
     });
 });
 
-app.get('/table', (req, res, next) => {
-    /*user.getModel().findOne({ username: req.user.username }).then((u) => {
+app.get('/table', auth, (req, res, next) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin or a waiter" });
         }
-    });*/
+    });
 
     var filter = {};
     if (req.query.number_id) {
@@ -286,12 +284,12 @@ app.post('/table', auth, (req, res, next) => {
     });
 });
 
-app.get('/dish', (req, res, next) => {
-    /*user.getModel().findOne({ username: req.user.username }).then((u) => {
+app.get('/dish', auth, (req, res, next) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin or a waiter" });
         }
-    });*/
+    });
 
     var filter = {};
     if (req.query.type) {
