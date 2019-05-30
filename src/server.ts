@@ -52,6 +52,7 @@ import * as table from './Table';
 import { Order } from './Order';
 import * as order from './Order';
 
+
 var ios = undefined;
 var nsp_chefs = undefined;
 var nsp_waiters = undefined;
@@ -279,7 +280,12 @@ app.post('/table', auth, (req, res, next) => {
 });
 
 app.get('/dish', (req, res, next) => {
-    dish.getModel().find().then((dishes) => {
+    var filter = {};
+    if (req.query.type) {
+        filter = { type: { $all: req.query.type } };
+    }
+
+    dish.getModel().find(filter).then((dishes) => {
         return res.status(200).json(dishes);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
@@ -316,7 +322,7 @@ app.post('/dish', auth, (req, res, next) => {
 
 app.delete('/dish/:name', auth, (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
-        if (!u.checkRole("ADMIN")) {
+        if (!u.checkRole("CASHER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
         }
     });

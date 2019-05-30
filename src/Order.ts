@@ -29,7 +29,7 @@ var orderSchema = new mongoose.Schema({
     },
     drinks: {
         type: [mongoose.SchemaTypes.String],
-        required: false
+        required: true
     },
     dishes_qt: {
         type: [mongoose.SchemaTypes.Number],
