@@ -187,8 +187,8 @@ app.put('/order', auth, (req, res, next) => {
 
 app.get('/order', (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
-        if (!u.checkRole("CHEF") && !u.checkRole("CASHER") && !u.checkRole("BARMAN")) {
-            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin, chef or barman" });
+        if (!u.checkRole("CHEF") && !u.checkRole("CASHER") && !u.checkRole("BARMAN") && !u.checkRole("WAITER")) {
+            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin, chef, barman or waiter" });
         }
     });
 
@@ -224,7 +224,7 @@ app.delete('/order/:order_id', (req, res, next) => {
 app.put('/table', auth, (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
-            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an casher" });
+            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin or waiter" });
         }
     });
 
@@ -245,7 +245,7 @@ app.put('/table', auth, (req, res, next) => {
 app.get('/table', (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
-            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an casher" });
+            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin or a waiter" });
         }
     });
 
@@ -289,7 +289,7 @@ app.post('/table', auth, (req, res, next) => {
 app.get('/dish', (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
-            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an casher" });
+            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin or a waiter" });
         }
     });
 
