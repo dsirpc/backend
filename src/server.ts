@@ -243,11 +243,11 @@ app.put('/table', auth, (req, res, next) => {
 });
 
 app.get('/table', (req, res, next) => {
-    /*user.getModel().findOne({ username: req.user.username }).then((u) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin or a waiter" });
         }
-    });*/
+    });
 
     var filter = {};
     if (req.query.number_id) {

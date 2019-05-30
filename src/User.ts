@@ -62,7 +62,7 @@ userSchema.methods.validatePassword = function( pwd:string ):boolean {
 }
 
 userSchema.methods.checkRole = function(role:string): boolean{
-    return this.role == role;
+    return this.role.toUpperCase() == role;
 }
 
 userSchema.methods.setRole = function(role:string): void{
