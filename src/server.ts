@@ -86,7 +86,6 @@ app.post('/user', auth, (req, res, next) => {
         else {
             var u = user.newUser(req.body);
             if (!req.body.password) {
-                console.log("1");
                 return next({ statusCode: 404, error: true, errormessage: "Password field missing" });
             }
             u.setPassword(req.body.password);
@@ -153,7 +152,6 @@ app.post('/order', auth, (req, res, next) => {
         nsp_cashers.emit('orderSent', data);
         return res.status(200).json({ error: false, errormessage: "", id: data._id });
     }).catch((reason) => {
-        console.log(reason);
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
@@ -236,7 +234,6 @@ app.put('/table', auth, (req, res, next) => {
 
         return res.status(200).json({ error: false, errormessage: "", status: t.getStatus() });
     }).catch((reason) => {
-        console.log(reason);
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
@@ -301,21 +298,17 @@ app.post('/dish', auth, (req, res, next) => {
 
     table.getModel().findOne({ name: req.body.name }).then((d) => {
         if (d) {
-            console.log("1");
             return next({ statusCode: 404, error: true, errormessage: "Dish already exists" });
         }
         else {
-            console.log("2");
             var newdish = req.body;
             dish.getModel().create(newdish).then((data) => {
                 return res.status(200).json({ error: false, errormessage: "", id: data.name });
             }).catch((reason) => {
-                console.log("3 " + reason);
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
             });
         }
     }).catch((reason) => {
-        console.log("4 " + reason);
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
