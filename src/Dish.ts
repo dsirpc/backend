@@ -3,7 +3,8 @@ import mongoose = require('mongoose');
 export interface Dish extends mongoose.Document {
     name: string,
     price: number,
-    ingredients: string[]
+    ingredients: string[],
+    type: string
 }
 
 var dishSchema = new mongoose.Schema({
@@ -17,6 +18,10 @@ var dishSchema = new mongoose.Schema({
     },
     ingredients: {
         type: [mongoose.SchemaTypes.String],
+        required: true
+    },
+    type: {
+        type: mongoose.SchemaTypes.String,
         required: true
     }
 });
