@@ -17,14 +17,17 @@
 */
 const result = require('dotenv').config();
 
-if (result.error) {
-    console.log("Unable to load \".env\" file. Please provide one to store the JWT secret key");
-    process.exit(-1);
-}
-if (!process.env.JWT_SECRET) {
-    console.log("\".env\" file loaded but JWT_SECRET=<secret> key-value pair was not found");
-    process.exit(-1);
-}
+
+/* This check doesn't work with Heroku :( */
+
+// if (result.error) {
+//     console.log("Unable to load \".env\" file. Please provide one to store the JWT secret key");
+//     process.exit(-1);
+// }
+// if (!process.env.JWT_SECRET) {
+//     console.log("\".env\" file loaded but JWT_SECRET=<secret> key-value pair was not found");
+//     process.exit(-1);
+// }
 
 
 import express = require('express');
@@ -57,27 +60,32 @@ var nsp_cashers = undefined;
 var app = express();
 var auth = jwt({ secret: process.env.JWT_SECRET });
 
-app.use( bodyparser.json() );
-app.use( cors() );
+app.use(bodyparser.json());
+app.use(cors());
 
 const port = process.env.PORT || 8080;
 
-// DA CAMBIARE @PIETRO
-app.get('/', (req, res) => res.send('Test'));
+app.get("/", (req, res) => {
+
+    res.status(200).json({ api_version: "1.0", endpoints: ["/user", "/order", "/table", "/dish"] });
+    // json method sends a JSON response (setting the correct Content-Type) to the client
+
+});
 
 app.post('/user', auth, (req, res, next) => {
-    user.getModel().findOne({username: req.user.username}).then((u) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
         }
     });
 
-    user.getModel().findOne({username: req.body.username}).then((u) => {
-        if(u)
+    user.getModel().findOne({ username: req.body.username }).then((u) => {
+        if (u)
             return next({ statusCode: 404, error: true, errormessage: "User already exists" });
-        else{
+        else {
             var u = user.newUser(req.body);
-            if (!req.body.password) {console.log("1");
+            if (!req.body.password) {
+                console.log("1");
                 return next({ statusCode: 404, error: true, errormessage: "Password field missing" });
             }
             u.setPassword(req.body.password);
@@ -92,9 +100,15 @@ app.post('/user', auth, (req, res, next) => {
 });
 
 app.get('/user', (req, res, next) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
+        if (!u.checkRole("CASHER")) {
+            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
+        }
+    });
+
     var filter = {};
     if (req.query.username)
-        filter ['username'] = { $all: req.query.username };
+        filter['username'] = { $all: req.query.username };
     if (req.query.role)
         filter['role'] = { $all: req.query.role };
 
@@ -106,13 +120,13 @@ app.get('/user', (req, res, next) => {
 });
 
 app.delete('/user/:username', auth, (req, res, next) => {
-    user.getModel().findOne({username: req.user.username}).then((u) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
         }
     });
-    
-    user.getModel().deleteOne({username: req.params.username}).then(() => {
+
+    user.getModel().deleteOne({ username: req.params.username }).then(() => {
         return res.status(200).json({ error: false, errormessage: "" });
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
@@ -120,7 +134,7 @@ app.delete('/user/:username', auth, (req, res, next) => {
 });
 
 app.post('/order', auth, (req, res, next) => {
-    user.getModel().findOne({username: req.user.username}).then((u) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("WAITER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an waiter" });
         }
@@ -132,18 +146,19 @@ app.post('/order', auth, (req, res, next) => {
     neworder.dishes = req.body.dishes;*/
     neworder.waiter = req.user.username;
     neworder.status = 0;
-    
+
     order.getModel().create(neworder).then((data) => {
         nsp_chefs.emit('orderSent', data);
         nsp_cashers.emit('orderSent', data);
         return res.status(200).json({ error: false, errormessage: "", id: data._id });
-    }).catch((reason) => {console.log(reason);
+    }).catch((reason) => {
+        console.log(reason);
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
 
 app.put('/order/:dish', auth, (req, res, next) => {
-    user.getModel().findOne({username: req.user.username}).then((u) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CHEF")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an chef" });
         }
@@ -159,17 +174,17 @@ app.put('/order/:dish', auth, (req, res, next) => {
 });
 
 app.put('/order', auth, (req, res, next) => {
-    user.getModel().findOne({username: req.user.username}).then((u) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CHEF")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an chef" });
         }
     });
 
     order.getModel().findOne(req.body).then((o) => {
-        if(o.getStatus() == 0)
+        if (o.getStatus() == 0)
             nsp_cashers.emit('orderStarted', order);
-        else{
-            if(o.getStatus() == 1){
+        else {
+            if (o.getStatus() == 1) {
                 nsp_cashers.emit('orderCompleted', order);
                 nsp_waiters.emit('orderCompleted', order);
             }
@@ -204,22 +219,23 @@ app.delete('/order/:order_id', (req, res, next) => {
 });
 
 app.put('/table', auth, (req, res, next) => {
-    user.getModel().findOne({username: req.user.username}).then((u) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an casher" });
         }
     });
 
-    table.getModel().findOne({number_id: req.body.number_id}).then((t) => {
+    table.getModel().findOne({ number_id: req.body.number_id }).then((t) => {
         t.setStatus();
         t.save();
-        if(t.getStatus())
+        if (t.getStatus())
             nsp_waiters.emit('tableFree', t);
         else
             nsp_cashers.emit('tableOccupied', t);
-            
+
         return res.status(200).json({ error: false, errormessage: "", status: t.getStatus() });
-    }).catch((reason) => {console.log(reason);
+    }).catch((reason) => {
+        console.log(reason);
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
@@ -238,20 +254,20 @@ app.get('/table', (req, res, next) => {
 });
 
 app.post('/table', auth, (req, res, next) => {
-    user.getModel().findOne({username: req.user.username}).then((u) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
         }
     });
 
-    table.getModel().findOne({number_id: req.body.number_id}).then((t) => {
-        if(t) {
+    table.getModel().findOne({ number_id: req.body.number_id }).then((t) => {
+        if (t) {
             return next({ statusCode: 404, error: true, errormessage: "Table number already exists" });
         }
-        else{
+        else {
             var newtable = req.body;
             newtable.status = false;
-            
+
             table.getModel().create(newtable).then((data) => {
                 nsp_waiters.emit('tableCreated', data);
                 return res.status(200).json({ error: false, errormessage: "", id: data.number_id });
@@ -271,49 +287,53 @@ app.get('/dish', (req, res, next) => {
 });
 
 app.post('/dish', auth, (req, res, next) => {
-    user.getModel().findOne({username: req.user.username}).then((u) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
         }
     });
 
-    table.getModel().findOne({name: req.body.name}).then((d) => {
-        if(d) {console.log("1");
+    table.getModel().findOne({ name: req.body.name }).then((d) => {
+        if (d) {
+            console.log("1");
             return next({ statusCode: 404, error: true, errormessage: "Dish already exists" });
         }
-        else{console.log("2");
+        else {
+            console.log("2");
             var newdish = req.body;
             dish.getModel().create(newdish).then((data) => {
                 return res.status(200).json({ error: false, errormessage: "", id: data.name });
-            }).catch((reason) => {console.log("3 " + reason);
+            }).catch((reason) => {
+                console.log("3 " + reason);
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
             });
         }
-    }).catch((reason) => {console.log("4 " + reason);
+    }).catch((reason) => {
+        console.log("4 " + reason);
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
 
 app.delete('/dish/:name', auth, (req, res, next) => {
-    user.getModel().findOne({username: req.user.username}).then((u) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("ADMIN")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
         }
     });
 
-    dish.getModel().deleteOne({name: req.params.name}).then(() => {
+    dish.getModel().deleteOne({ name: req.params.name }).then(() => {
         return res.status(200).json({ error: false, errormessage: "" });
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
 
-app.get('/renew', auth, (req,res,next) => {
+app.get('/renew', auth, (req, res, next) => {
     var tokendata = req.user;
     delete tokendata.iat;
     delete tokendata.exp;
-    console.log("Renewing token for user " + JSON.stringify( tokendata ));
-    var token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: '1h' } );
+    console.log("Renewing token for user " + JSON.stringify(tokendata));
+    var token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: '1h' });
     return res.status(200).json({ error: false, errormessage: "", token: token_signed });
 });
 
@@ -325,7 +345,7 @@ passport.use(new passportHTTP.BasicStrategy(
 
         console.log("New login attempt from " + username);
         user.getModel().findOne({ username: username }, (err, user) => {
-            
+
             if (err) {
                 return done({ statusCode: 500, error: true, errormessage: err });
             }
@@ -392,7 +412,7 @@ mongoose.connect(process.env.MONGODB_URI).then(
         ios.on('connection', function (client) {
             console.log("Socket.io client connected");
         });
-        server.listen(8080, () => console.log("HTTP Server started on port 8080"));
+        server.listen(port, () => console.log("HTTP Server started on port" + port));
 
         // To start an HTTPS server we create an https.Server instance 
         // passing the express application middleware. Then, we start listening
