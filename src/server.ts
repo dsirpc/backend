@@ -17,14 +17,17 @@
 */
 const result = require('dotenv').config();
 
-if (result.error) {
-    console.log("Unable to load \".env\" file. Please provide one to store the JWT secret key");
-    process.exit(-1);
-}
-if (!process.env.JWT_SECRET) {
-    console.log("\".env\" file loaded but JWT_SECRET=<secret> key-value pair was not found");
-    process.exit(-1);
-}
+
+/* This check doesn't work with Heroku :( */
+
+// if (result.error) {
+//     console.log("Unable to load \".env\" file. Please provide one to store the JWT secret key");
+//     process.exit(-1);
+// }
+// if (!process.env.JWT_SECRET) {
+//     console.log("\".env\" file loaded but JWT_SECRET=<secret> key-value pair was not found");
+//     process.exit(-1);
+// }
 
 
 import express = require('express');
@@ -207,7 +210,7 @@ app.get('/order', (req, res, next) => {
 });
 
 app.delete('/order/:order_id', (req, res, next) => {
-    order.getModel().deleteOne({ _id: req.params.order_id }).then((order) => {
+    order.getModel().deleteOne({_id: req.params.order_id}).then((order) => {
         return res.status(200).json(order);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
