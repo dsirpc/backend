@@ -7,15 +7,17 @@ export interface Order extends mongoose.Document{
     drinks: string[],
     dishes_qt: number[],
     drinks_qt: number[],
-    dishes_ready: boolean[],
+    dishes_ready: number,
     chef: string,
     waiter: string,
     barman: string,
     status: number,
     timestamp: Date,
-    setDishReady: (dish_id: string)=>void,
+    getDishes: ()=>string[],
     setOrderStatus: ()=>void,
-    getStatus: ()=>number
+    getStatus: ()=>number,
+    incrementDishesReady: ()=>void,
+    getDishesReady: ()=>number,
 }
 
 var orderSchema = new mongoose.Schema({
@@ -40,7 +42,7 @@ var orderSchema = new mongoose.Schema({
         required: true
     },
     dishes_ready: {
-        type: [mongoose.SchemaTypes.Boolean],
+        type: mongoose.SchemaTypes.Number,
         required: true
     },
     chef: {
@@ -72,12 +74,20 @@ orderSchema.methods.setOrderStatus = function(): void{
     this.status = 2;
 }
 
-orderSchema.methods.setDishReady = function(dish:string): void{
-    this.dishes_ready[this.dishes.indexOf(dish)] = true;
-}
-
 orderSchema.methods.getStatus = function(): number{
     return this.status;
+}
+
+orderSchema.methods.getDishes = function(): string[]{
+    return this.dishes;
+}
+
+orderSchema.methods.incrementDishesReady = function(): void{
+    this.dishes_ready++;
+}
+
+orderSchema.methods.getDishesReady = function(): number{
+    return this.dishes_ready;
 }
 
 

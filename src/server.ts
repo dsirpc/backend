@@ -156,22 +156,6 @@ app.post('/order', auth, (req, res, next) => {
     });
 });
 
-app.put('/order/:dish', auth, (req, res, next) => {
-    user.getModel().findOne({ username: req.user.username }).then((u) => {
-        if (!u.checkRole("CHEF")) {
-            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an chef" });
-        }
-    });
-
-    order.getModel().findOne(req.body).then((o) => {
-        o.setDishReady(req.params.dish_id);
-        o.save();
-        return res.status(200).json({ error: false, errormessage: "", id: o._id });
-    }).catch((reason) => {
-        return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
-    });
-});
-
 app.put('/order', auth, (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CHEF")) {
@@ -180,15 +164,20 @@ app.put('/order', auth, (req, res, next) => {
     });
 
     order.getModel().findOne(req.body).then((o) => {
-        if (o.getStatus() == 0)
+        if (o.getStatus() == 0) {
+            o.setOrderStatus();
             nsp_cashers.emit('orderStarted', order);
+        }
         else {
             if (o.getStatus() == 1) {
-                nsp_cashers.emit('orderCompleted', order);
-                nsp_waiters.emit('orderCompleted', order);
+                o.incrementDishesReady();
+                if(o.getDishes().length == o.getDishesReady()) {
+                    o.setOrderStatus();
+                    nsp_cashers.emit('orderCompleted', order);
+                    nsp_waiters.emit('orderCompleted', order);
+                }
             }
         }
-        o.setOrderStatus();
         o.save();
         return res.status(200).json({ error: false, errormessage: "", id: o._id });
     }).catch((reason) => {
@@ -197,9 +186,18 @@ app.put('/order', auth, (req, res, next) => {
 });
 
 app.get('/order', (req, res, next) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
+        if (!u.checkRole("CHEF") && !u.checkRole("CASHER") && !u.checkRole("BARMAN")) {
+            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin, chef or barman" });
+        }
+    });
+
     var filter = {};
     if (req.query.table_number) {
-        filter = { table_number: { $all: req.query.table_number } };
+        filter['table_number'] = { $all: req.query.table_number };
+    }
+    if(req.query.status) {
+        filter['status'] = { $all: req.query.status };
     }
 
     order.getModel().find(filter).sort({ timestamp: "asc" }).then((orders) => {
@@ -210,6 +208,12 @@ app.get('/order', (req, res, next) => {
 });
 
 app.delete('/order/:order_id', (req, res, next) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
+        if (!u.checkRole("CASHER")) {
+            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
+        }
+    });
+
     order.getModel().deleteOne({_id: req.params.order_id}).then((order) => {
         return res.status(200).json(order);
     }).catch((reason) => {
@@ -224,7 +228,7 @@ app.put('/table', auth, (req, res, next) => {
         }
     });
 
-    table.getModel().findOne({ number_id: req.body.number_id }).then((t) => {
+    table.getModel().findOne(req.body).then((t) => {
         t.setStatus();
         t.save();
         if (t.getStatus())
@@ -239,9 +243,15 @@ app.put('/table', auth, (req, res, next) => {
 });
 
 app.get('/table', (req, res, next) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
+        if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
+            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an casher" });
+        }
+    });
+
     var filter = {};
     if (req.query.number_id) {
-        filter = { number_id: { $all: req.query.number_id } };
+        filter['number_id'] = { $all: req.query.number_id };
     }
 
     table.getModel().find(filter).then((tables) => {
@@ -277,6 +287,12 @@ app.post('/table', auth, (req, res, next) => {
 });
 
 app.get('/dish', (req, res, next) => {
+    user.getModel().findOne({ username: req.user.username }).then((u) => {
+        if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
+            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an casher" });
+        }
+    });
+
     var filter = {};
     if (req.query.type) {
         filter = { type: { $all: req.query.type } };
