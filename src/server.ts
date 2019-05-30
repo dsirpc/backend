@@ -195,6 +195,14 @@ app.get('/order', (req, res, next) => {
     });
 });
 
+app.delete('/order/:order_id', (req, res, next) => {
+    order.getModel().deleteOne({_id: req.params.order_id}).then((order) => {
+        return res.status(200).json(order);
+    }).catch((reason) => {
+        return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
+    });
+});
+
 app.put('/table', auth, (req, res, next) => {
     user.getModel().findOne({username: req.user.username}).then((u) => {
         if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {

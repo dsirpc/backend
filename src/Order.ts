@@ -5,6 +5,8 @@ export interface Order extends mongoose.Document{
     table_number: number,
     dishes: string[],
     drinks: string[],
+    dishes_qt: number[],
+    drinks_qt: number[],
     dishes_ready: boolean[],
     chef: string,
     waiter: string,
@@ -28,6 +30,18 @@ var orderSchema = new mongoose.Schema({
     drinks: {
         type: [mongoose.SchemaTypes.String],
         required: false
+    },
+    dishes_qt: {
+        type: [mongoose.SchemaTypes.Number],
+        required: true
+    },
+    drinks_qt: {
+        type: [mongoose.SchemaTypes.Number],
+        required: true
+    },
+    dishes_ready: {
+        type: [mongoose.SchemaTypes.Boolean],
+        required: true
     },
     chef: {
         type: mongoose.SchemaTypes.String,
