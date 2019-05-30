@@ -100,11 +100,11 @@ app.post('/user', auth, (req, res, next) => {
 });
 
 app.get('/user', (req, res, next) => {
-    user.getModel().findOne({ username: req.user.username }).then((u) => {
+    /*user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
         }
-    });
+    });*/
 
     var filter = {};
     if (req.query.username)
@@ -186,11 +186,11 @@ app.put('/order', auth, (req, res, next) => {
 });
 
 app.get('/order', (req, res, next) => {
-    user.getModel().findOne({ username: req.user.username }).then((u) => {
+    /*user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CHEF") && !u.checkRole("CASHER") && !u.checkRole("BARMAN") && !u.checkRole("WAITER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin, chef, barman or waiter" });
         }
-    });
+    });*/
 
     var filter = {};
     if (req.query.table_number) {
@@ -243,11 +243,11 @@ app.put('/table', auth, (req, res, next) => {
 });
 
 app.get('/table', (req, res, next) => {
-    user.getModel().findOne({ username: req.user.username }).then((u) => {
+    /*user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin or a waiter" });
         }
-    });
+    });*/
 
     var filter = {};
     if (req.query.number_id) {
@@ -287,11 +287,11 @@ app.post('/table', auth, (req, res, next) => {
 });
 
 app.get('/dish', (req, res, next) => {
-    user.getModel().findOne({ username: req.user.username }).then((u) => {
+    /*user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin or a waiter" });
         }
-    });
+    });*/
 
     var filter = {};
     if (req.query.type) {
