@@ -4,7 +4,8 @@ export interface Dish extends mongoose.Document {
     name: string,
     price: number,
     ingredients: string[],
-    type: string
+    type: string,
+    estimated_time: number
 }
 
 var dishSchema = new mongoose.Schema({
@@ -23,6 +24,10 @@ var dishSchema = new mongoose.Schema({
     type: {
         type: mongoose.SchemaTypes.String,
         required: true
+    },
+    estimated_time: {
+        type: mongoose.SchemaTypes.Number,
+        required: false
     }
 });
 
