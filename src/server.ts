@@ -149,7 +149,7 @@ app.post('/order', auth, (req, res, next) => {
         nsp_chefs.emit('orderSent', data);
         nsp_cashers.emit('orderSent', data);
         return res.status(200).json({ error: false, errormessage: "", id: data._id });
-    }).catch((reason) => {
+    }).catch((reason) => {console.log(reason);
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
@@ -235,7 +235,7 @@ app.put('/table', auth, (req, res, next) => {
             nsp_cashers.emit('tableOccupied', t);
 
         return res.status(200).json({ error: false, errormessage: "", status: t.getStatus() });
-    }).catch((reason) => {
+    }).catch((reason) => {console.log(reason);
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
