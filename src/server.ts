@@ -226,7 +226,7 @@ app.put('/table', auth, (req, res, next) => {
         }
     });
 
-    console.log(req.body.number_id);
+    console.log(req.body[0].number_id);
 
     table.getModel().findOne({number_id: req.body.number_id}).then((t) => {
         t.setStatus();
