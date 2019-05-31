@@ -150,6 +150,7 @@ app.post('/order', auth, (req, res, next) => {
     neworder.waiter = req.user.username;
     neworder.status = 0;
     neworder.timestamp = new Date();
+    
     console.log(neworder);
 
     order.getModel().create(neworder).then((data) => {
