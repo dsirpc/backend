@@ -150,12 +150,13 @@ app.post('/order', auth, (req, res, next) => {
     neworder.waiter = req.user.username;
     neworder.status = 0;
     neworder.timestamp = new Date();
+    console.log(neworder);
 
     order.getModel().create(neworder).then((data) => {
         nsp_chefs.emit('orderSent', data);
         nsp_cashers.emit('orderSent', data);
         return res.status(200).json({ error: false, errormessage: "", id: data._id });
-    }).catch((reason) => {
+    }).catch((reason) => {console.log(reason);
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
