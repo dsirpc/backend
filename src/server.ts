@@ -139,8 +139,7 @@ app.post('/order', auth, (req, res, next) => {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an waiter" });
         }
     });
-    console.log(typeof req.body);
-    var neworder = req.body;
+    var neworder = req.body[0];
     neworder.timestamp = new Date();
     neworder.waiter = req.user.username;
     neworder.status = 0;
@@ -161,7 +160,7 @@ app.put('/order', auth, (req, res, next) => {
         }
     });
 
-    order.getModel().findOne(req.body).then((o) => {
+    order.getModel().findOne(req.body[0]).then((o) => {
         if (o.getStatus() == 0) {
             o.setOrderStatus();
             nsp_cashers.emit('orderStarted', order);
@@ -226,9 +225,7 @@ app.put('/table', auth, (req, res, next) => {
         }
     });
 
-    console.log(req.body[0].number_id);
-
-    table.getModel().findOne({number_id: req.body.number_id}).then((t) => {
+    table.getModel().findOne({number_id: req.body[0].number_id}).then((t) => {
         t.setStatus();
         t.save();
         if (t.getStatus())
