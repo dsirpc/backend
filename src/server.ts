@@ -139,16 +139,23 @@ app.post('/order', auth, (req, res, next) => {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an waiter" });
         }
     });
-    var neworder = req.body[0];
-    neworder.timestamp = new Date();
+    
+    var neworder;
+    neworder.table_number = req.body[0].table_number;
+    neworder.dishes = req.body[0].dishes;
+    neworder.drinks = req.body[0].drinks;
+    neworder.dishes_ready = req.body[0].dishes_ready;
+    neworder.chef = req.body[0].chef;
+    neworder.barman = req.body[0].barman;
     neworder.waiter = req.user.username;
     neworder.status = 0;
+    neworder.timestamp = new Date();
 
     order.getModel().create(neworder).then((data) => {
         nsp_chefs.emit('orderSent', data);
         nsp_cashers.emit('orderSent', data);
         return res.status(200).json({ error: false, errormessage: "", id: data._id });
-    }).catch((reason) => {console.log(reason);
+    }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
@@ -234,7 +241,7 @@ app.put('/table', auth, (req, res, next) => {
             nsp_cashers.emit('tableOccupied', t);
 
         return res.status(200).json({ error: false, errormessage: "", status: t.getStatus() });
-    }).catch((reason) => {console.log(reason);
+    }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
