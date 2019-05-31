@@ -140,20 +140,19 @@ app.post('/order', auth, (req, res, next) => {
         }
     });
 
-    console.log(req.body);
-
-    var neworder = order.newOrder(req.body);
-    /*neworder.table_number = req.body.table_number;
-    neworder.dishes = req.body.dishes;
-    neworder.drinks = req.body.drinks;
-    neworder.dishes_ready = req.body.dishes_ready;
-    neworder.chef = req.body.chef;
-    neworder.barman = req.body.barman;*/
-    neworder.waiter = req.user.username;
-    neworder.status = 0;
-    neworder.timestamp = new Date();
-
     
+
+    var neworder = {
+        table_number: req.body.table_number,
+        dishes: req.body.dishes,
+        drinks: req.body.drinks,
+        dishes_ready: req.body.dishes_ready,
+        chef: req.body.chef,
+        barman: req.body.barman,
+        waiter: req.user.username,
+        status: 0,
+        timestamp: new Date()
+    };
 
     order.getModel().create(neworder).then((data) => {
         nsp_chefs.emit('orderSent', data);
