@@ -142,13 +142,13 @@ app.post('/order', auth, (req, res, next) => {
 
     console.log(req.body);
 
-    var neworder;
-    neworder.table_number = req.body.table_number;
+    var neworder = order.newOrder(req.body);
+    /*neworder.table_number = req.body.table_number;
     neworder.dishes = req.body.dishes;
     neworder.drinks = req.body.drinks;
     neworder.dishes_ready = req.body.dishes_ready;
     neworder.chef = req.body.chef;
-    neworder.barman = req.body.barman;
+    neworder.barman = req.body.barman;*/
     neworder.waiter = req.user.username;
     neworder.status = 0;
     neworder.timestamp = new Date();
