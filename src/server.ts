@@ -141,12 +141,12 @@ app.post('/order', auth, (req, res, next) => {
     });
 
     var neworder;
-    neworder.table_number = req.body[0].table_number;
-    neworder.dishes = req.body[0].dishes;
-    neworder.drinks = req.body[0].drinks;
-    neworder.dishes_ready = req.body[0].dishes_ready;
-    neworder.chef = req.body[0].chef;
-    neworder.barman = req.body[0].barman;
+    neworder.table_number = req.body.table_number;
+    neworder.dishes = req.body.dishes;
+    neworder.drinks = req.body.drinks;
+    neworder.dishes_ready = req.body.dishes_ready;
+    neworder.chef = req.body.chef;
+    neworder.barman = req.body.barman;
     neworder.waiter = req.user.username;
     neworder.status = 0;
     neworder.timestamp = new Date();
