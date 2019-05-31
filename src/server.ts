@@ -140,6 +140,8 @@ app.post('/order', auth, (req, res, next) => {
         }
     });
 
+    console.log(req.body);
+
     var neworder;
     neworder.table_number = req.body.table_number;
     neworder.dishes = req.body.dishes;
@@ -150,8 +152,8 @@ app.post('/order', auth, (req, res, next) => {
     neworder.waiter = req.user.username;
     neworder.status = 0;
     neworder.timestamp = new Date();
+
     
-    console.log(neworder);
 
     order.getModel().create(neworder).then((data) => {
         nsp_chefs.emit('orderSent', data);
