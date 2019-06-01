@@ -171,7 +171,7 @@ app.put('/order', auth, (req, res, next) => {
         }
     });
 
-    order.getModel().findOne(req.body[0]).then((o) => {
+    order.getModel().findOne(req.body).then((o) => {
         if (us.checkRole("CHEF")) {
             if (o.getStatus() == 0) {
                 o.setOrderStatus();
@@ -245,7 +245,7 @@ app.put('/table', auth, (req, res, next) => {
         }
     });
 
-    table.getModel().findOne({number_id: req.body[0].number_id}).then((t) => {
+    table.getModel().findOne({number_id: req.body.number_id}).then((t) => {
         if (us.checkRole("WAITER") && t.getStatus()) {
             t.setStatus();
             nsp_cashers.emit('tableOccupied', t);
