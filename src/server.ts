@@ -166,8 +166,8 @@ app.put('/order', auth, (req, res, next) => {
     var us;
     user.getModel().findOne({ username: req.user.username }).then((u) => {
         us = u;
-        if (!us.checkRole("CHEF") && !us.checkRole("CASHER")) {
-            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an chef" });
+        if (!us.checkRole("CHEF") && !us.checkRole("CASHER") && !us.checkRole("WAITER")) {
+            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin, chef or waiter" });
         }
     });
 
@@ -188,7 +188,11 @@ app.put('/order', auth, (req, res, next) => {
                 }
             }
         } else {
-            o.payed = true;
+            if (us.checkRole("CASHER")) {
+                o.payed = true;
+            } else {
+                o.setOrderStatus();
+            }
         }
         o.save();
         return res.status(200).json({ error: false, errormessage: "", id: o._id });
