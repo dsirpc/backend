@@ -10,6 +10,7 @@ export interface Order extends mongoose.Document{
     waiter: string,
     barman: string,
     status: number,
+    payed: boolean,
     timestamp: Date,
     getDishes: ()=>string[],
     setOrderStatus: ()=>void,
@@ -49,6 +50,10 @@ var orderSchema = new mongoose.Schema({
     },
     status: {
         type: mongoose.SchemaTypes.Number,
+        required: true
+    },
+    payed: {
+        type: mongoose.SchemaTypes.Boolean,
         required: true
     },
     timestamp: {

@@ -151,6 +151,7 @@ app.post('/order', auth, (req, res, next) => {
         barman: req.body.barman,
         waiter: req.user.username,
         status: 0,
+        payed: false,
         timestamp: new Date()
     };
 
