@@ -63,12 +63,16 @@ var orderSchema = new mongoose.Schema({
 });
 
 orderSchema.methods.setOrderStatus = function(): void{
-    if(this.status == 0)
+    if(this.status == 0) {
         this.status = 1;
-    if(this.status == 1)
-        this.status = 2;
-    if(this.status == 2)
-        this.status = 3;
+    } else {
+        if(this.status == 1) {
+            this.status = 2;
+        } else {
+            if(this.status == 2)
+                this.status = 3;
+        }
+    }
 }
 
 orderSchema.methods.getStatus = function(): number{
