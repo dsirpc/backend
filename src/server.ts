@@ -140,8 +140,6 @@ app.post('/order', auth, (req, res, next) => {
         }
     });
 
-    
-
     var neworder = {
         table_number: req.body.table_number,
         dishes: req.body.dishes,
@@ -165,26 +163,32 @@ app.post('/order', auth, (req, res, next) => {
 });
 
 app.put('/order', auth, (req, res, next) => {
+    var us;
     user.getModel().findOne({ username: req.user.username }).then((u) => {
-        if (!u.checkRole("CHEF")) {
+        us = u;
+        if (!us.checkRole("CHEF") && !us.checkRole("CASHER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an chef" });
         }
     });
 
     order.getModel().findOne(req.body[0]).then((o) => {
-        if (o.getStatus() == 0) {
-            o.setOrderStatus();
-            nsp_cashers.emit('orderStarted', order);
-        }
-        else {
-            if (o.getStatus() == 1) {
-                o.incrementDishesReady();
-                if(o.getDishes().length == o.getDishesReady()) {
-                    o.setOrderStatus();
-                    nsp_cashers.emit('orderCompleted', order);
-                    nsp_waiters.emit('orderCompleted', order);
+        if (us.checkRole("CHEF")) {
+            if (o.getStatus() == 0) {
+                o.setOrderStatus();
+                nsp_cashers.emit('orderStarted', order);
+            }
+            else {
+                if (o.getStatus() == 1) {
+                    o.incrementDishesReady();
+                    if(o.getDishes().length == o.getDishesReady()) {
+                        o.setOrderStatus();
+                        nsp_cashers.emit('orderCompleted', order);
+                        nsp_waiters.emit('orderCompleted', order);
+                    }
                 }
             }
+        } else {
+            o.payed = true;
         }
         o.save();
         return res.status(200).json({ error: false, errormessage: "", id: o._id });
@@ -206,6 +210,9 @@ app.get('/order', auth, (req, res, next) => {
     }
     if(req.query.status) {
         filter['status'] = { $all: req.query.status };
+    }
+    if(req.query.payed) {
+        filter['payed'] = { $all: req.query.payed };
     }
 
     order.getModel().find(filter).sort({ timestamp: "asc" }).then((orders) => {
