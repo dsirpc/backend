@@ -245,7 +245,7 @@ app.put('/table', auth, (req, res, next) => {
         }
     });
 
-    table.getModel().findOne({number_id: req.body.number_id}).then((t) => {
+    table.getModel().findOne(req.body).then((t) => {
         if (us.checkRole("WAITER") && t.getStatus()) {
             t.setStatus();
             nsp_cashers.emit('tableOccupied', t);
