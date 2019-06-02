@@ -142,9 +142,9 @@ app.post('/order', auth, (req, res, next) => {
 
     var neworder = {
         table_number: req.body.table_number,
-        dishes: req.body.dishes,
+        food: req.body.food,
         drinks: req.body.drinks,
-        dishes_ready: req.body.dishes_ready,
+        food_ready: req.body.dishes_food,
         chef: req.body.chef,
         barman: req.body.barman,
         waiter: req.user.username,
@@ -208,18 +208,7 @@ app.get('/order', auth, (req, res, next) => {
         }
     });
 
-    var filter = {};
-    if (req.query.table_number) {
-        filter['table_number'] = { $all: req.query.table_number };
-    }
-    if(req.query.status) {
-        filter['status'] = { $all: req.query.status };
-    }
-    if(req.query.payed) {
-        filter['payed'] = { $all: req.query.payed };
-    }
-
-    order.getModel().find(filter).sort({ timestamp: "asc" }).then((orders) => {
+    order.getModel().find().sort({ timestamp: "asc" }).then((orders) => {
         return res.status(200).json(orders);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
@@ -273,15 +262,7 @@ app.get('/table', auth, (req, res, next) => {
         }
     });
 
-    var filter = {};
-    if (req.query.number_id) {
-        filter['number_id'] = { $all: req.query.number_id };
-    }
-    if (req.query.status) {
-        filter['status'] = { $all: req.query.status };
-    }
-
-    table.getModel().find(filter).then((tables) => {
+    table.getModel().find().then((tables) => {
         return res.status(200).json(tables);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
