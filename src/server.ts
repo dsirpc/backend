@@ -283,7 +283,7 @@ app.get('/table', auth, (req, res, next) => {
 
     table.getModel().find(filter).then((tables) => {
         return res.status(200).json(tables);
-    }).catch((reason) => {console.log(reason);
+    }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
