@@ -194,8 +194,10 @@ app.put('/order', auth, (req, res, next) => {
                 o.setOrderStatus();
             }
         }
-        o.save();
-        return res.status(200).json({ error: false, errormessage: "", id: o._id });
+        o.save().then(() => {
+            return res.status(200).json({ error: false, errormessage: "", id: o._id })
+        ;});
+        
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
@@ -248,8 +250,9 @@ app.put('/table', auth, (req, res, next) => {
             t.setStatus();
             nsp_waiters.emit('tableFree', t);
         }
-        t.save();
-        return res.status(200).json({ error: false, errormessage: "", status: t.getStatus() });
+        t.save().then(() => {
+            return res.status(200).json({ error: false, errormessage: "", status: t.getStatus() });
+        });
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
