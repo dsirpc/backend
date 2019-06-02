@@ -198,7 +198,7 @@ app.put('/order', auth, (req, res, next) => {
             return res.status(200).json({ error: false, errormessage: "", id: o._id })
         ;});
         
-    }).catch((reason) => {
+    }).catch((reason) => {console.log(reason);
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
