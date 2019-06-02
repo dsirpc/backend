@@ -267,7 +267,6 @@ app.put('/table', auth, (req, res, next) => {
 });
 
 app.get('/table', auth, (req, res, next) => {
-    console.log("HERE");
     user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin or a waiter" });
