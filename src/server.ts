@@ -144,7 +144,7 @@ app.post('/order', auth, (req, res, next) => {
         table_number: req.body.table_number,
         food: req.body.food,
         drinks: req.body.drinks,
-        food_ready: req.body.dishes_food,
+        food_ready: req.body.food_ready,
         chef: req.body.chef,
         barman: req.body.barman,
         waiter: req.user.username,
