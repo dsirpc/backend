@@ -275,7 +275,10 @@ app.get('/table', auth, (req, res, next) => {
 
     var filter = {};
     if (req.query.number_id) {
-        filter = { number_id: { $all: req.query.number_id } };
+        filter['number_id'] = { $all: req.query.number_id };
+    }
+    if (req.query.status) {
+        filter['status'] = { $all: req.query.status };
     }
 
     table.getModel().find(filter).then((tables) => {
