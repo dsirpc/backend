@@ -3,9 +3,9 @@ import mongoose = require('mongoose');
 export interface Order extends mongoose.Document{
     readonly _id: mongoose.Schema.Types.ObjectId,
     table_number: number,
-    dishes: string[],
+    food: string[],
     drinks: string[],
-    dishes_ready: number,
+    food_ready: number,
     chef: string,
     waiter: string,
     barman: string,
@@ -24,7 +24,7 @@ var orderSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.Number,
         required: true
     },
-    dishes: {
+    food: {
         type: [mongoose.SchemaTypes.String],
         required: true
     },
@@ -32,7 +32,7 @@ var orderSchema = new mongoose.Schema({
         type: [mongoose.SchemaTypes.String],
         required: true
     },
-    dishes_ready: {
+    food_ready: {
         type: mongoose.SchemaTypes.Number,
         required: true
     },
