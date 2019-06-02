@@ -172,6 +172,7 @@ app.put('/order', auth, (req, res, next) => {
     });
 
     order.getModel().findOne(req.body).then((o) => {
+        console.log(o);
         if (us.checkRole("CHEF")) {
             if (o.getStatus() == 0) {
                 o.setOrderStatus();
