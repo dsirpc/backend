@@ -277,13 +277,13 @@ app.get('/table', auth, (req, res, next) => {
     if (req.query.number_id) {
         filter['number_id'] = { $all: req.query.number_id };
     }
-    if (req.query.status) {
+    if (req.query.status) {console.log("HERE");
         filter['status'] = { $all: req.query.status };
     }
 
     table.getModel().find(filter).then((tables) => {
         return res.status(200).json(tables);
-    }).catch((reason) => {
+    }).catch((reason) => {console.log(reason);
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
