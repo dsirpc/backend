@@ -172,7 +172,6 @@ app.put('/order', auth, (req, res, next) => {
     });
 
     order.getModel().findOne(req.body).then((o) => {
-        console.log(o);
         if (us.checkRole("CHEF")) {
             if (o.getStatus() == 0) {
                 o.setOrderStatus();
@@ -199,7 +198,7 @@ app.put('/order', auth, (req, res, next) => {
             return res.status(200).json({ error: false, errormessage: "", id: o._id })
         ;});
         
-    }).catch((reason) => {console.log(reason);
+    }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });

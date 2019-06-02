@@ -80,15 +80,15 @@ orderSchema.methods.getStatus = function(): number{
 }
 
 orderSchema.methods.getDishes = function(): string[]{
-    return this.dishes;
+    return this.food;
 }
 
 orderSchema.methods.incrementDishesReady = function(): void{
-    this.dishes_ready++;
+    this.food_ready++;
 }
 
 orderSchema.methods.getDishesReady = function(): number{
-    return this.dishes_ready;
+    return this.food_ready;
 }
 
 
