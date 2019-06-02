@@ -268,7 +268,7 @@ app.put('/table', auth, (req, res, next) => {
 
 app.get('/table', auth, (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
-        if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
+        if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {console.log("HERE");
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin or a waiter" });
         }
     });
@@ -277,7 +277,7 @@ app.get('/table', auth, (req, res, next) => {
     if (req.query.number_id) {
         filter['number_id'] = { $all: req.query.number_id };
     }
-    if (req.query.status) {console.log("HERE");
+    if (req.query.status) {
         filter['status'] = { $all: req.query.status };
     }
 
