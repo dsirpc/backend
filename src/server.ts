@@ -298,7 +298,7 @@ app.post('/table', auth, (req, res, next) => {
 
 app.get('/dish', auth, (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
-        if (!u.checkRole("CASHER") && !u.checkRole("WAITER")) {
+        if (!u.checkRole("CASHER") && !u.checkRole("WAITER") && !u.checkRole("CHEF") && !u.checkRole("BARMAN")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin or a waiter" });
         } else {
             var filter = {};
