@@ -194,8 +194,10 @@ app.put('/order', auth, (req, res, next) => {
                         o.payed = true;
                     } else {
                         if (us.checkRole("WAITER")) {
+                            console.log('checkRole-Waiter');
                             if (req.body.type === 'food') {
                                 o.setFoodStatus();
+                                console.log('checkRole-Waiter.if');
                             }
                             else {
                                 o.setDrinkStatus();
