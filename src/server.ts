@@ -213,12 +213,14 @@ app.put('/order', auth, (req, res, next) => {
                     }
                 }
                 o.save().then(() => {
-                    return res.status(200).json({ error: false, errormessage: "", id: o._id })
-                ;});
+                    return res.status(200).json({ error: false, errormessage: "", id: o._id });
+                });
             }).catch((reason) => {
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
             });
         }
+    }).catch((reason) => {
+        return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
 
