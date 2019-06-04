@@ -171,9 +171,8 @@ app.put('/order', auth, (req, res, next) => {
         if (!us.checkRole("CHEF") && !us.checkRole("CASHER") && !us.checkRole("WAITER") && !us.checkRole("BARMAN")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin, chef, waiter or barman" });
         } else {
-            order.getModel().findOne(req.body).then((o) => {
+            order.getModel().findOne(req.body._id).then((o) => {
                 if (us.checkRole("CHEF")) {
-                    console.log(o);
                     if (o.getFoodStatus() == 0) {
                         o.setFoodStatus();
                         nsp_cashers.emit('orderFoodStarted', order);
@@ -445,18 +444,6 @@ mongoose.connect(process.env.MONGODB_URI).then(
     function onconnected() {
         console.log("Connected to MongoDB");
 
-        /*var u = user.newUser({
-            username: "admin",
-        });
-        u.setAdmin();
-        u.setPassword("admin");
-        u.save().then(() => {
-            console.log("Admin user created");
-        }).catch((err) => {
-            console.log("Unable to create admin user: " + err);
-        });*/
-
-
         // To start a standard HTTP server we directly invoke the "listen"
         // method of express application
         let server = http.createServer(app);
@@ -465,6 +452,7 @@ mongoose.connect(process.env.MONGODB_URI).then(
         nsp_waiters = ios.of('/waiters');
         nsp_cashers = ios.of('/cashers');
         ios.on('connection', function (client) {
+            var ip = 
             console.log("Socket.io client connected");
         });
         server.listen(port, () => console.log("HTTP Server started on port" + port));
