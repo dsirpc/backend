@@ -41,7 +41,7 @@ import passport = require('passport');           // authentication middleware fo
 import passportHTTP = require('passport-http');
 import bodyparser = require('body-parser');
 import cors = require('cors');
-var ObjectId = require('mongodb').ObjectId;
+const {ObjectId} = require('mongodb');
 
 import { userInfo } from 'os';
 import { User } from './User';
@@ -244,7 +244,8 @@ app.delete('/order/:order_id', auth, (req, res, next) => {
         if (!u.checkRole("CASHER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
         } else {
-            var id = ObjectId(req.params.order_id);
+            // var id = ObjectId(req.params.order_id);
+            let id = new mongoose.Types.ObjectId(req.params.order_id);
             order.getModel().deleteOne({_id: id}).then((order) => {
                 return res.status(200).json(order);
             }).catch((reason) => {console.log(reason);
