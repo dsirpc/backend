@@ -9,12 +9,15 @@ export interface Order extends mongoose.Document{
     chef: string,
     waiter: string,
     barman: string,
-    status: number,
+    food_status: number,
+    drink_status: number,
     payed: boolean,
     timestamp: Date,
     getDishes: ()=>string[],
-    setOrderStatus: ()=>void,
-    getStatus: ()=>number,
+    setFoodStatus: ()=>void,
+    setDrinkStatus: ()=>void,
+    getFoodStatus: ()=>number,
+    getDrinkStatus: ()=>number,
     incrementDishesReady: ()=>void,
     getDishesReady: ()=>number,
 }
@@ -48,7 +51,11 @@ var orderSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.String,
         required: false
     },
-    status: {
+    food_status: {
+        type: mongoose.SchemaTypes.Number,
+        required: true
+    },
+    drink_status: {
         type: mongoose.SchemaTypes.Number,
         required: true
     },
@@ -62,22 +69,40 @@ var orderSchema = new mongoose.Schema({
     }
 });
 
-orderSchema.methods.setOrderStatus = function(): void{
-    if(this.status == 0) {
-        this.status = 1;
+orderSchema.methods.setFoodStatus = function(): void{
+    if(this.food_status == 0) {
+        this.food_status = 1;
     } else {
-        if(this.status == 1) {
-            this.status = 2;
+        if(this.food_status == 1) {
+            this.food_status = 2;
         } else {
-            if(this.status == 2)
-                this.status = 3;
+            if(this.food_status == 2)
+                this.food_status = 3;
         }
     }
 }
 
-orderSchema.methods.getStatus = function(): number{
-    return this.status;
+orderSchema.methods.setDrinkStatus = function(): void{
+    if(this.drink_status == 0) {
+        this.drink_status = 1;
+    } else {
+        if(this.drink_status == 1) {
+            this.drink_status = 2;
+        } else {
+            if(this.drink_status == 2)
+                this.drink_status = 3;
+        }
+    }
 }
+
+orderSchema.methods.getFoodStatus = function(): number{
+    return this.food_status;
+}
+
+orderSchema.methods.getDrinkStatus = function(): number{
+    return this.drink_status;
+}
+
 
 orderSchema.methods.getDishes = function(): string[]{
     return this.food;

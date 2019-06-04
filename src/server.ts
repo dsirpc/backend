@@ -146,7 +146,8 @@ app.post('/order', auth, (req, res, next) => {
                 chef: req.body.chef,
                 barman: req.body.barman,
                 waiter: req.user.username,
-                status: 0,
+                food_status: 0,
+                drink_status: 0,
                 payed: false,
                 timestamp: new Date()
             };
@@ -166,22 +167,22 @@ app.put('/order', auth, (req, res, next) => {
     var us;
     user.getModel().findOne({ username: req.user.username }).then((u) => {
         us = u;
-        if (!us.checkRole("CHEF") && !us.checkRole("CASHER") && !us.checkRole("WAITER")) {
-            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin, chef or waiter" });
+        if (!us.checkRole("CHEF") && !us.checkRole("CASHER") && !us.checkRole("WAITER") && !us.checkRole("BARMAN")) {
+            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin, chef, waiter or barman" });
         } else {
             order.getModel().findOne(req.body).then((o) => {
                 if (us.checkRole("CHEF")) {
-                    if (o.getStatus() == 0) {
-                        o.setOrderStatus();
-                        nsp_cashers.emit('orderStarted', order);
+                    if (o.getFoodStatus() == 0) {
+                        o.setFoodStatus();
+                        nsp_cashers.emit('orderFoodStarted', order);
                     }
                     else {
-                        if (o.getStatus() == 1) {
+                        if (o.getFoodStatus() == 1) {
                             o.incrementDishesReady();
                             if(o.getDishes().length == o.getDishesReady()) {
-                                o.setOrderStatus();
-                                nsp_cashers.emit('orderCompleted', order);
-                                nsp_waiters.emit('orderCompleted', order);
+                                o.setFoodStatus();
+                                nsp_cashers.emit('orderFoodCompleted', order);
+                                nsp_waiters.emit('orderFoodCompleted', order);
                             }
                         }
                     }
@@ -189,7 +190,25 @@ app.put('/order', auth, (req, res, next) => {
                     if (us.checkRole("CASHER")) {
                         o.payed = true;
                     } else {
-                        o.setOrderStatus();
+                        if (us.checkRole("WAITER")) {
+                            if (req.body.type === 'food') {
+                                o.setFoodStatus();
+                            }
+                            else {
+                                o.setDrinkStatus();
+                            }
+                        } else {
+                            if (us.checkRole("BARMAN")) {
+                                if (o.getDrinkStatus() === 0) {
+                                    nsp_chefs.emit('orderDrinkStarted', order);
+                                } else {
+                                    if (o.getDrinkStatus() === 1) {
+                                        nsp_waiters.emit('orderDrinkCompleted', order);
+                                    }
+                                }
+                                o.setDrinkStatus();
+                            }
+                        }
                     }
                 }
                 o.save().then(() => {
