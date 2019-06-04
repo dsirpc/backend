@@ -171,7 +171,7 @@ app.put('/order', auth, (req, res, next) => {
         if (!us.checkRole("CHEF") && !us.checkRole("CASHER") && !us.checkRole("WAITER") && !us.checkRole("BARMAN")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin, chef, waiter or barman" });
         } else {
-            order.getModel().findOne(req.body._id).then((o) => {
+            order.getModel().findOne({_id: req.body._id}).then((o) => {
                 if (us.checkRole("CHEF")) {
                     if (o.getFoodStatus() == 0) {
                         o.setFoodStatus();
