@@ -173,6 +173,7 @@ app.put('/order', auth, (req, res, next) => {
         } else {
             order.getModel().findOne(req.body).then((o) => {
                 if (us.checkRole("CHEF")) {
+                    console.log(o);
                     if (o.getFoodStatus() == 0) {
                         o.setFoodStatus();
                         nsp_cashers.emit('orderFoodStarted', order);
