@@ -174,6 +174,7 @@ app.put('/order', auth, (req, res, next) => {
             order.getModel().findOne({_id: req.body._id}).then((o) => {
                 if (us.checkRole("CHEF")) {
                     if (o.getFoodStatus() == 0) {
+                        o.chef = us.username;
                         o.setFoodStatus();
                         nsp_cashers.emit('orderFoodStarted', order);
                     }
@@ -204,6 +205,7 @@ app.put('/order', auth, (req, res, next) => {
                         } else {
                             if (us.checkRole("BARMAN")) {
                                 if (o.getDrinkStatus() === 0) {
+                                    o.barman = us.username;
                                     nsp_chefs.emit('orderDrinkStarted', order);
                                 } else {
                                     if (o.getDrinkStatus() === 1) {
