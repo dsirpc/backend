@@ -245,7 +245,7 @@ app.delete('/order/:order_id', auth, (req, res, next) => {
         } else {
             order.getModel().deleteOne({_id: req.params.order_id}).then((order) => {
                 return res.status(200).json(order);
-            }).catch((reason) => {
+            }).catch((reason) => {console.log(reason);
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
             });
         }
