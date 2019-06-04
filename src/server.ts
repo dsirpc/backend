@@ -195,7 +195,7 @@ app.put('/order', auth, (req, res, next) => {
                     } else {
                         if (us.checkRole("WAITER")) {
                             console.log('checkRole-Waiter');
-                            if (req.body.params.type === 'food') {
+                            if (req.query.type === 'food') {
                                 o.setFoodStatus();
                                 console.log('checkRole-Waiter.if');
                             }
