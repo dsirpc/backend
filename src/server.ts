@@ -195,10 +195,8 @@ app.put('/order', auth, (req, res, next) => {
                         o.payed = true;
                     } else {
                         if (us.checkRole("WAITER")) {
-                            console.log('checkRole-Waiter');
                             if (req.query.type === 'food') {
                                 o.setFoodStatus();
-                                console.log('checkRole-Waiter.if');
                             }
                             else {
                                 o.setDrinkStatus();
@@ -244,7 +242,7 @@ app.get('/order', auth, (req, res, next) => {
     });
 });
 
-app.delete('/order/:order_id', auth, (req, res, next) => {
+app.delete('/order', auth, (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
@@ -253,7 +251,7 @@ app.delete('/order/:order_id', auth, (req, res, next) => {
             // var id = ObjectId(req.params.order_id);
             // let id = new mongoose.Types.ObjectId(req.params.order_id);
             
-            order.getModel().deleteOne({_id: req.params.order_id}).then((order) => {
+            order.getModel().deleteMany({}).then((order) => {
                 return res.status(200).json(order);
             }).catch((reason) => {console.log(reason);
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
