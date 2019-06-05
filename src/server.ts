@@ -176,8 +176,8 @@ app.put('/order', auth, (req, res, next) => {
                     if (o.getFoodStatus() == 0) {
                         o.chef = us.username;
                         o.setFoodStatus();
-                        nsp_cashers.emit('orderFoodStarted', order);
-                        nsp_chefs.emit('orderFoodStarted', order);
+                        nsp_cashers.emit('orderFoodStarted', o);
+                        nsp_chefs.emit('orderFoodStarted', o);
                     }
                     else {
                         if (o.getFoodStatus() == 1) {
@@ -185,8 +185,8 @@ app.put('/order', auth, (req, res, next) => {
                             nsp_cashers.emit('dishCompleted');
                             if(o.getDishes().length == o.getDishesReady()) {
                                 o.setFoodStatus();
-                                nsp_cashers.emit('orderFoodCompleted', order);
-                                nsp_waiters.emit('orderFoodCompleted', order);
+                                nsp_cashers.emit('orderFoodCompleted', o);
+                                nsp_waiters.emit('orderFoodCompleted', o);
                             }
                         }
                     }
@@ -197,9 +197,15 @@ app.put('/order', auth, (req, res, next) => {
                         if (us.checkRole("WAITER")) {
                             if (req.query.type === 'food') {
                                 o.setFoodStatus();
+                                if (o.getFoodStatus() === 3) {
+                                    nsp_cashers.emit('orderFoodDelivered', o);
+                                }
                             }
                             else {
                                 o.setDrinkStatus();
+                                if (o.getDrinkStatus() === 3) {
+                                    nsp_cashers.emit('orderDrinkDelivered', o);
+                                }
                             }
                         } else {
                             if (us.checkRole("BARMAN")) {
