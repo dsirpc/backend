@@ -397,8 +397,8 @@ app.get('/renew', auth, (req, res, next) => {
     delete tokendata.exp;
     console.log("Renewing token for user " + JSON.stringify(tokendata));
     var token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: '1h' });
-    console.log(req.params.location);
-    return res.status(200).json({ error: false, errormessage: "", token: token_signed, l: req.params.location });
+    console.log(req.params.l);
+    return res.status(200).json({ error: false, errormessage: "", token: token_signed, location: req.query.l });
 });
 
 passport.use(new passportHTTP.BasicStrategy(
