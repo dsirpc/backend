@@ -277,11 +277,13 @@ app.put('/table', auth, (req, res, next) => {
                 if (us.checkRole("WAITER") && t.getStatus()) {
                     t.setStatus();
                     nsp_cashers.emit('tableOccupied', t);
+                    nsp_waiters.emit('tableOccupied', t);
                 }
                 
                 if (us.checkRole("CASHER") && !t.getStatus()) {
                     t.setStatus();
                     nsp_waiters.emit('tableFree', t);
+                    nsp_cashers.emit('tableFree', t);
                 }
                 t.save().then(() => {
                     return res.status(200).json({ error: false, errormessage: "", status: t.getStatus() });
