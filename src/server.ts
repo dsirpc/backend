@@ -112,7 +112,7 @@ app.get('/user', auth, (req, res, next) => {
                 filter['role'] = { $all: req.query.role };
             
             user.getModel().find(filter).then((users) => {
-                return res.status(200).json({ error: false, errormessage: "", data: users });
+                return res.status(200).json(users);
             }).catch((reason) => {
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
             })
