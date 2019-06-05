@@ -177,6 +177,7 @@ app.put('/order', auth, (req, res, next) => {
                         o.chef = us.username;
                         o.setFoodStatus();
                         nsp_cashers.emit('orderFoodStarted', order);
+                        nsp_chefs.emit('orderFoodStarted', order);
                     }
                     else {
                         if (o.getFoodStatus() == 1) {
