@@ -182,7 +182,6 @@ app.put('/order', auth, (req, res, next) => {
                     else {
                         if (o.getFoodStatus() == 1) {
                             o.setDishReady(req.query.index);
-                            console.log(o.food_ready[req.query.index]);
                             nsp_cashers.emit('dishCompleted');
                             if(o.orderCompleted()) {
                                 o.setFoodStatus();
@@ -224,7 +223,7 @@ app.put('/order', auth, (req, res, next) => {
                     }
                 }
                 o.save().then(() => {
-                    return res.status(200).json({ error: false, errormessage: "", id: o._id });
+                    return res.status(200).json({ error: false, errormessage: "", id: o.food_ready });
                 });
             }).catch((reason) => {console.log(reason);
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
