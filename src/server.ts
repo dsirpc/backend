@@ -181,6 +181,7 @@ app.put('/order', auth, (req, res, next) => {
                     }
                     else {
                         if (o.getFoodStatus() == 1) {
+                            console.log(req.query.index);
                             o.setDishReady(req.query.index);
                             nsp_cashers.emit('dishCompleted');
                             if(o.orderCompleted()) {
