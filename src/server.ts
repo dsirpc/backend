@@ -181,9 +181,9 @@ app.put('/order', auth, (req, res, next) => {
                     }
                     else {
                         if (o.getFoodStatus() == 1) {
-                            o.incrementDishesReady();
+                            o.setDishReady(req.query.index);
                             nsp_cashers.emit('dishCompleted');
-                            if(o.getDishes().length == o.getDishesReady()) {
+                            if(o.orderCompleted()) {
                                 o.setFoodStatus();
                                 nsp_cashers.emit('orderFoodCompleted', o);
                                 nsp_waiters.emit('orderFoodCompleted', o);
