@@ -188,6 +188,7 @@ app.put('/order', auth, (req, res, next) => {
                                 nsp_cashers.emit('orderFoodCompleted', o);
                                 nsp_waiters.emit('orderFoodCompleted', o);
                             }
+                            o.save();
                         }
                     }
                 } else {
