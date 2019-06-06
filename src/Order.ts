@@ -109,7 +109,7 @@ orderSchema.methods.getDishes = function(): string[]{
 }
 
 orderSchema.methods.setDishReady = function(index): void{
-    this.food_ready[index] = true;;
+    this.food_ready[index] = true;
 }
 
 orderSchema.methods.orderCompleted = function(): boolean{
