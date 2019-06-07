@@ -122,15 +122,11 @@ app.get('/user', auth, (req, res, next) => {
 
 app.delete('/user', auth, (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
-        if (!u.checkRole("CASHER")) {
-            return next({ statusCode: 404, error: true, errormessage: "Unauthorized" });
-        } else {
             user.getModel().deleteMany({}).then(() => {
                 return res.status(200).json({ error: false, errormessage: "" });
             }).catch((reason) => {
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
             });
-        }
     });
 });
 
@@ -253,15 +249,11 @@ app.get('/order', auth, (req, res, next) => {
 
 app.delete('/order', auth, (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
-        if (!u.checkRole("CASHER")) {
-            return next({ statusCode: 404, error: true, errormessage: "Unauthorized" });
-        } else {
             order.getModel().deleteMany({}).then((order) => {
                 return res.status(200).json(order);
             }).catch((reason) => {console.log(reason);
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
             });
-        }
     });
 });
 
@@ -335,15 +327,11 @@ app.post('/table', auth, (req, res, next) => {
 
 app.delete('/table', auth, (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
-        if (!u.checkRole("CASHER")) {
-            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
-        } else {
             table.getModel().deleteMany({}).then(() => {
                 return res.status(200).json({ error: false, errormessage: "" });
             }).catch((reason) => {
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
             });
-        }
     });
 });
 
@@ -392,15 +380,12 @@ app.post('/dish', auth, (req, res, next) => {
 
 app.delete('/dish', auth, (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
-        if (!u.checkRole("CASHER")) {
-            return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not an admin" });
-        } else {
             dish.getModel().deleteMany({}).then(() => {
                 return res.status(200).json({ error: false, errormessage: "" });
             }).catch((reason) => {
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
             });
-        }
+
     });
 });
 
@@ -468,7 +453,7 @@ mongoose.connect(process.env.MONGODB_URI).then(
         console.log("Connected to MongoDB");
 
         // De-commentare le seguenti righe per popolare il database
-        /*var users = [ 
+        var users = [ 
             {
                 username: 'Cassiere',
                 password: 'cassiere',
@@ -492,6 +477,7 @@ mongoose.connect(process.env.MONGODB_URI).then(
         ];
         for (const us of users) {
             var u = user.newUser(us);
+            u.setPassword(us.password);
             u.save().then(() => {
                 console.log('Utente creato');
             })
@@ -547,7 +533,7 @@ mongoose.connect(process.env.MONGODB_URI).then(
             ts.save().then(() => {
                 console.log('Piatto creato');
             })
-        }*/
+        }
         //FINE SCRIPT POPOLAZIONE DATABASE
 
         // To start a standard HTTP server we directly invoke the "listen"
