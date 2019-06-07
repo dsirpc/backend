@@ -121,13 +121,11 @@ app.get('/user', auth, (req, res, next) => {
 });
 
 app.delete('/user', auth, (req, res, next) => {
-    user.getModel().findOne({ username: req.user.username }).then((u) => {
             user.getModel().deleteMany({}).then(() => {
                 return res.status(200).json({ error: false, errormessage: "" });
             }).catch((reason) => {
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
             });
-    });
 });
 
 app.post('/order', auth, (req, res, next) => {
@@ -248,13 +246,11 @@ app.get('/order', auth, (req, res, next) => {
 });
 
 app.delete('/order', auth, (req, res, next) => {
-    user.getModel().findOne({ username: req.user.username }).then((u) => {
             order.getModel().deleteMany({}).then((order) => {
                 return res.status(200).json(order);
             }).catch((reason) => {console.log(reason);
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
             });
-    });
 });
 
 app.put('/table', auth, (req, res, next) => {
@@ -326,13 +322,11 @@ app.post('/table', auth, (req, res, next) => {
 });
 
 app.delete('/table', auth, (req, res, next) => {
-    user.getModel().findOne({ username: req.user.username }).then((u) => {
             table.getModel().deleteMany({}).then(() => {
                 return res.status(200).json({ error: false, errormessage: "" });
             }).catch((reason) => {
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
             });
-    });
 });
 
 app.get('/dish', auth, (req, res, next) => {
@@ -379,14 +373,11 @@ app.post('/dish', auth, (req, res, next) => {
 });
 
 app.delete('/dish', auth, (req, res, next) => {
-    user.getModel().findOne({ username: req.user.username }).then((u) => {
             dish.getModel().deleteMany({}).then(() => {
                 return res.status(200).json({ error: false, errormessage: "" });
             }).catch((reason) => {
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
             });
-
-    });
 });
 
 app.get('/renew', auth, (req, res, next) => {
