@@ -468,7 +468,7 @@ mongoose.connect(process.env.MONGODB_URI).then(
         console.log("Connected to MongoDB");
 
         // De-commentare le seguenti righe per popolare il database
-        var users = [ 
+        /*var users = [ 
             {
                 username: 'Cassiere',
                 password: 'cassiere',
@@ -547,7 +547,8 @@ mongoose.connect(process.env.MONGODB_URI).then(
             ts.save().then(() => {
                 console.log('Piatto creato');
             })
-        }
+        }*/
+        //FINE SCRIPT POPOLAZIONE DATABASE
 
         // To start a standard HTTP server we directly invoke the "listen"
         // method of express application
