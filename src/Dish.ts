@@ -19,7 +19,7 @@ var dishSchema = new mongoose.Schema({
     },
     ingredients: {
         type: [mongoose.SchemaTypes.String],
-        required: true
+        required: false
     },
     type: {
         type: mongoose.SchemaTypes.String,
