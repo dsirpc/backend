@@ -105,13 +105,7 @@ app.get('/user', auth, (req, res, next) => {
         if (!u.checkRole("CASHER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized" });
         } else {
-            var filter = {};
-            if (req.query.username)
-                filter['username'] = { $all: req.query.username };
-            if (req.query.role)
-                filter['role'] = { $all: req.query.role };
-            
-            user.getModel().find(filter).then((users) => {
+            user.getModel().find().then((users) => {
                 return res.status(200).json(users);
             }).catch((reason) => {
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
