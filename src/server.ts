@@ -121,7 +121,7 @@ app.delete('/user', auth, (req, res, next) => {
         } else {
             if (req.query.username) {
                 user.getModel().deleteOne({username: req.query.username}).then(() => {
-                    return res.status(200).json({ error: false, errormessage: "" });
+                    return res.status(200).json({ error: false, errormessage: "", username: req.query.username });
                 }).catch((reason) => {
                     return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
                 });
@@ -145,9 +145,9 @@ app.post('/order', auth, (req, res, next) => {
                 chef: req.body.chef,
                 barman: req.body.barman,
                 waiter: req.user.username,
-                food_status: 0,
-                drink_status: 0,
-                payed: false,
+                food_status: req.body.food_status,
+                drink_status: req.body.drink_status,
+                payed: req.body.payed,
                 timestamp: new Date()
             };
         
