@@ -120,12 +120,12 @@ app.get('/user', auth, (req, res, next) => {
     });
 });
 
-app.delete('/user', auth, (req, res, next) => {
+app.delete('/user/:username', auth, (req, res, next) => {
     user.getModel().findOne({ username: req.user.username }).then((u) => {
         if (!u.checkRole("CASHER")) {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized" });
         } else {
-            user.getModel().deleteMany({}).then(() => {
+            user.getModel().deleteOne({username: req.params.username}).then(() => {
                 return res.status(200).json({ error: false, errormessage: "" });
             }).catch((reason) => {
                 return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
