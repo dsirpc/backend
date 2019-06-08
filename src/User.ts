@@ -8,8 +8,7 @@ export interface User extends mongoose.Document {
     digest: string,
     setPassword: (pwd:string)=>void,
     validatePassword: (pwd:string)=>boolean,
-    checkRole: (role:string)=>boolean,
-    setRole: (role:string)=>void
+    checkRole: (role:string)=>boolean
 }
 
 var userSchema = new mongoose.Schema( {
