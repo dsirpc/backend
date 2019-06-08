@@ -90,7 +90,7 @@ app.post('/user', auth, (req, res, next) => {
                     u.setPassword(req.body.password);
         
                     u.save().then((data) => {
-                        return res.status(200).json({ error: false, errormessage: "", id: data.username });
+                        return res.status(200).json({ error: false, errormessage: "", username: data.username });
                     }).catch((reason) => {
                         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason.errmsg });
                     });
@@ -120,8 +120,8 @@ app.delete('/user', auth, (req, res, next) => {
             return next({ statusCode: 404, error: true, errormessage: "Unauthorized" });
         } else {
             if (req.query.username) {
-                user.getModel().deleteOne({username: req.query.username}).then(() => {
-                    return res.status(200).json({ error: false, errormessage: "", username: req.query.username });
+                user.getModel().deleteOne({username: req.query.username}).then((data) => {
+                    return res.status(200).json({ error: false, errormessage: "", username: data.username });
                 }).catch((reason) => {
                     return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
                 });

@@ -13,7 +13,6 @@ export interface Order extends mongoose.Document{
     drink_status: number,
     payed: boolean,
     timestamp: Date,
-    getDishes: ()=>string[],
     setFoodStatus: ()=>void,
     setDrinkStatus: ()=>void,
     getFoodStatus: ()=>number,
