@@ -12,7 +12,7 @@ Questo è il vero core di tutto il progetto. È scritto interamente in TypeScrip
 
 Per eseguire il backend bisogna prima di tutto compilarlo e puoi farlo con `npm run compile`. Ora puoi lanciare il comando è `npm run start` per eseguirlo. Tutto il codice sorgente TypeScript è contenuto nella cartella `src` e la versione compilata verrà creata all'interno di `dist`.
 
-Fra i `npm run-script` è anche presente `postinstall`: ci è stato necessario per fare il deploy del progetto su [Heroku](https://heroku.com). A questo abbiamo scelto di utilizzare un database (mongodb) direttamente su cloud con [mLab.com](https://mlab.com).
+Fra i `npm run-script` è anche presente `postinstall`: ci è stato necessario per fare il deploy del progetto su [Heroku](https://heroku.com). Di conseguenza abbiamo scelto di utilizzare un database (mongodb) direttamente su cloud con [mLab.com](https://mlab.com).
 
 Per il funzionamento del progetto sono necessarie delle variabili d'ambiente che bisogna inserire nel file `.env`:
 
